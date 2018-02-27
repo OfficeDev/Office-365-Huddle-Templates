@@ -1,0 +1,1369 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "luisAppId": {
+      "type": "string"
+    },
+    "botName": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "botClientId": {
+      "type": "string"
+    },
+    "botClientSecret": {
+      "type": "securestring"
+    },
+    "metricClientId": {
+      "type": "string"
+    },
+    "metricClientSecret": {
+      "type": "securestring"
+    },
+    "graphClientId": {
+      "type": "string"
+    },
+    "graphClientSecret": {
+      "type": "securestring"
+    },
+    "microsoftAppId": {
+      "type": "string"
+    },
+    "microsoftAppPassword": {
+      "type": "securestring "
+    },
+    "certificatePfxBase64": {
+      "type": "string"
+    },
+    "certificatePfxPassword": {
+      "type": "securestring"
+    },
+    "baseSPSiteUrl": {
+      "type": "string",
+      "defaultValue": "https://<Tenant>.sharepoint.com/sites/<Site>"
+    },
+    "globalTeam": {
+      "type": "string"
+    },
+    "sourceCodeRepositoryURL": {
+      "type": "string",
+      "defaultValue": "https://github.com/<YourAccount>/Huddle",
+      "metadata": {
+        "description": "Source code repository URL"
+      }
+    },
+    "sourceCodeBranch": {
+      "type": "string",
+      "defaultValue": "master",
+      "metadata": {
+        "description": "Sourcecode Repo branch"
+      }
+    },
+    "sourceCodeManualIntegration": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Use 'true' if you are deploying from the base repo, 'false' if you are deploying from your own fork. If you're using 'false', make sure you have admin permissions to the repo. If you get an error, you should add GitHub integration to another web app manually, so that you get a GitHub access token associated with your Azure Subscription."
+      }
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "name": "Huddle",
+    "nameLowecase": "[toLower(variables('name'))]",
+    "suffix": "[substring(uniqueString(resourceGroup().id), 0, 6)]",
+    "botId": "[concat(variables('nameLowecase'), '-bot-registration-', variables('suffix'))]",
+    "certName": "[concat(variables('nameLowecase'),  '-cert-', variables('suffix'))]",
+    "luisName": "luis",
+    "hostingPlanName": "[concat(variables('nameLowecase'), '-', variables('suffix'))]",
+    "storageAccountName": "[concat(variables('nameLowecase'), variables('suffix'))]",
+    "botWebAppName": "[concat(variables('nameLowecase'), '-bot-', variables('suffix'))]",
+    "metricAppName": "[concat(variables('nameLowecase'), '-metric-', variables('suffix'))]",
+    "microsoftGraphConnectorName": "[concat('microsoft-graph-connector-', variables('suffix'))]",
+    "botMessagingEndPoint":"[concat('https://', variables('botWebAppName'), '.azurewebsites.net/api/messages')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "B1",
+        "tier": "Basic",
+        "size": "B1",
+        "family": "B",
+        "capacity": 1
+      },
+      "name": "[variables('hostingPlanName')]",
+      "apiVersion": "2015-08-01",
+      "location": "[variables('location')]",
+      "properties": {
+        "name": "[variables('hostingPlanName')]",
+        "numberOfWorkers": 1
+      }
+    },
+    {
+      "type": "Microsoft.Web/certificates",
+      "name": "[variables('certName')]",
+      "apiVersion": "2016-03-01",
+      "location": "[variables('location')]",
+      "scale": null,
+      "properties": {
+        "pfxBlob": "[parameters('certificatePfxBase64')]",
+        "password": "[parameters('certificatePfxPassword')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "Standard_RAGRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[variables('location')]"
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "S0"
+      },
+      "kind": "LUIS",
+      "name": "[variables('luisName')]",
+      "apiVersion": "2016-02-01-preview",
+      "location": "westus",
+      "properties": {}
+    },
+    {
+      "name": "[variables('microsoftGraphConnectorName')]",
+      "type": "Microsoft.Web/customApis",
+      "location": "[variables('location')]",
+      "apiVersion": "2016-06-01",
+      "properties": {
+        "displayName": "[concat('Microsoft Graph ', variables('suffix'))]",
+        "description": "Microsoft Graph connector to perform operations on the graph.",
+        "iconUri": "data:image/png;base64,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",
+        "brandColor": null,
+        "backendService": {
+          "serviceUrl": "https://graph.microsoft.com/"
+        },
+        "connectionParameters": {
+          "token": {
+            "type": "oAuthSetting",
+            "oAuthSettings": {
+              "identityProvider": "aad",
+              "customParameters": {
+                "LoginUri": {
+                  "value": "https://login.windows.net"
+                },
+                "TenantId": {
+                  "value": "common"
+                },
+                "ResourceUri": {
+                  "value": "https://graph.microsoft.com"
+                }
+              },
+              "clientId": "[parameters('graphClientId')]",
+              "clientSecret": "[parameters('graphClientSecret')]"
+            },
+            "uiDefinition": null
+          }
+        },
+        "swagger": {
+          "swagger": "2.0",
+          "info": {
+            "title": "Microsoft Graph",
+            "description": "Operations on the Microsoft Graph",
+            "version": "1.0"
+          },
+          "host": "graph.microsoft.com",
+          "schemes": [],
+          "consumes": [],
+          "produces": [],
+          "paths": {
+            "/v1.0/groups/{groupId}/planner/plans": {
+              "get": {
+                "responses": {
+                  "default": {
+                    "description": "default",
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "@odata.context": {
+                          "type": "string",
+                          "description": "@odata.context",
+                          "x-ms-summary": "@odata.context"
+                        },
+                        "@odata.count": {
+                          "type": "integer",
+                          "format": "int32",
+                          "description": "@odata.count",
+                          "x-ms-summary": "@odata.count"
+                        },
+                        "@odata.nextLink": {
+                          "type": "string",
+                          "description": "@odata.nextLink",
+                          "x-ms-summary": "@odata.nextLink"
+                        },
+                        "value": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "@odata.etag": {
+                                "type": "string",
+                                "description": "@odata.etag",
+                                "x-ms-summary": "@odata.etag"
+                              },
+                              "createdBy": {
+                                "type": "object",
+                                "properties": {
+                                  "user": {
+                                    "type": "object",
+                                    "properties": {
+                                      "displayName": {
+                                        "type": "string",
+                                        "description": "displayName",
+                                        "x-ms-summary": "displayName"
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "description": "id",
+                                        "x-ms-summary": "id"
+                                      }
+                                    },
+                                    "description": "user",
+                                    "x-ms-summary": "user"
+                                  },
+                                  "application": {
+                                    "type": "object",
+                                    "properties": {
+                                      "displayName": {
+                                        "type": "string",
+                                        "description": "displayName",
+                                        "x-ms-summary": "displayName"
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "description": "id",
+                                        "x-ms-summary": "id"
+                                      }
+                                    },
+                                    "description": "application",
+                                    "x-ms-summary": "application"
+                                  }
+                                },
+                                "description": "createdBy",
+                                "x-ms-summary": "createdBy"
+                              },
+                              "createdDateTime": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "createdDateTime",
+                                "x-ms-summary": "createdDateTime"
+                              },
+                              "owner": {
+                                "type": "string",
+                                "description": "owner",
+                                "x-ms-summary": "owner"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "title",
+                                "x-ms-summary": "title"
+                              },
+                              "id": {
+                                "type": "string",
+                                "description": "id",
+                                "x-ms-summary": "id"
+                              }
+                            }
+                          },
+                          "description": "value",
+                          "x-ms-summary": "value"
+                        }
+                      }
+                    }
+                  }
+                },
+                "summary": "List Plans for Group",
+                "operationId": "ListPlansGroup",
+                "parameters": [
+                  {
+                    "name": "groupId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string",
+                    "x-ms-summary": "Group ID"
+                  }
+                ],
+                "description": "Retrieve a list of Planner Plans owned by a group."
+              }
+            },
+            "/v1.0/planner/buckets/{bucketId}/tasks": {
+              "get": {
+                "responses": {
+                  "default": {
+                    "description": "default",
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "@odata.context": {
+                          "type": "string",
+                          "description": "@odata.context",
+                          "x-ms-summary": "@odata.context"
+                        },
+                        "@odata.count": {
+                          "type": "integer",
+                          "format": "int32",
+                          "description": "@odata.count",
+                          "x-ms-summary": "@odata.count"
+                        },
+                        "@odata.nextLink": {
+                          "type": "string",
+                          "description": "@odata.nextLink",
+                          "x-ms-summary": "@odata.nextLink"
+                        },
+                        "value": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "@odata.etag": {
+                                "type": "string",
+                                "description": "@odata.etag",
+                                "x-ms-summary": "@odata.etag"
+                              },
+                              "createdBy": {
+                                "type": "object",
+                                "properties": {
+                                  "user": {
+                                    "type": "object",
+                                    "properties": {
+                                      "displayName": {
+                                        "type": "string",
+                                        "description": "displayName",
+                                        "x-ms-summary": "displayName"
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "description": "id",
+                                        "x-ms-summary": "id"
+                                      }
+                                    },
+                                    "description": "user",
+                                    "x-ms-summary": "user"
+                                  },
+                                  "application": {
+                                    "type": "object",
+                                    "properties": {
+                                      "displayName": {
+                                        "type": "string",
+                                        "description": "displayName",
+                                        "x-ms-summary": "displayName"
+                                      },
+                                      "id": {
+                                        "type": "string",
+                                        "description": "id",
+                                        "x-ms-summary": "id"
+                                      }
+                                    },
+                                    "description": "application",
+                                    "x-ms-summary": "application"
+                                  }
+                                },
+                                "description": "createdBy",
+                                "x-ms-summary": "createdBy"
+                              },
+                              "createdDateTime": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "createdDateTime",
+                                "x-ms-summary": "createdDateTime"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "title",
+                                "x-ms-summary": "title"
+                              },
+                              "id": {
+                                "type": "string",
+                                "description": "id",
+                                "x-ms-summary": "id"
+                              },
+                              "activeChecklistItemCount": {
+                                "type": "integer",
+                                "format": "int32",
+                                "description": "activeChecklistItemCount",
+                                "x-ms-summary": "activeChecklistItemCount"
+                              }
+                            }
+                          },
+                          "description": "value",
+                          "x-ms-summary": "value"
+                        }
+                      }
+                    }
+                  }
+                },
+                "summary": "List Tasks for Planner Bucket",
+                "operationId": "ListTasksBucket",
+                "parameters": [
+                  {
+                    "name": "bucketId",
+                    "in": "path",
+                    "required": true,
+                    "type": "string",
+                    "x-ms-summary": "Bucket ID"
+                  }
+                ],
+                "description": "Retrieve a list of Planner Tasks in a Bucket."
+              }
+            },
+            "/v1.0/planner/tasks/{id}": {
+              "delete": {
+                "responses": {
+                  "204": { "description": "No Content" }
+                },
+                "summary": "Delete a Task",
+                "description": "Delete a Task by ID",
+                "operationId": "DeleteTask",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                  },
+                  {
+                    "name": "If-Match",
+                    "description": "etag of the task",
+                    "in": "header",
+                    "required": true,
+                    "type": "string"
+                  }
+                ]
+              }
+            }
+          },
+          "definitions": {},
+          "parameters": {},
+          "responses": {},
+          "securityDefinitions": {
+            "oauth2_auth": {
+              "type": "oauth2",
+              "flow": "accessCode",
+              "authorizationUrl": "https://login.windows.net/common/oauth2/authorize",
+              "tokenUrl": "https://login.windows.net/common/oauth2/authorize"
+            }
+          },
+          "security": [
+            {}
+          ],
+          "tags": []
+        }
+      }
+    },
+    {
+        "apiVersion": "2017-12-01",
+        "type": "Microsoft.BotService/botServices",
+        "name": "[variables('botId')]",
+        "location": "global",
+        "kind": "bot",
+        "sku": {
+            "name": "S1"
+        },
+        "properties": {
+            "name": "[variables('botId')]",
+            "displayName": "[parameters('botName')]",
+            "endpoint": "[variables('botMessagingEndPoint')]",
+            "msaAppId": "[parameters('microsoftAppId')]"
+        },
+        "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "name": "microsoft-graph",
+      "properties": {
+        "api": {
+          "id": "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "name": "teams",
+      "properties": {
+        "api": {
+          "id": "[concat(subscription().id,'/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/teams')]"
+        },
+        "displayName": "teams"
+      }
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "name": "planner",
+      "properties": {
+        "api": {
+          "id": "[concat(subscription().id,'/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/planner')]"
+        },
+        "displayName": "planner"
+      }
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "GetJoinedTeams",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {}
+              }
+            }
+          },
+          "actions": {
+            "List_teams": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['teams']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/beta/me/joinedTeams"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "List_teams": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('List_teams')",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "teams": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'teams')]",
+                "connectionName": "teams",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/teams')]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'teams')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "ListPlans",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "properties": {
+                    "groupId": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "List_Plans_for_Group": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['microsoft-graph']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/v1.0/groups/@{encodeURIComponent(triggerBody()?['groupId'])}/planner/plans"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "List_Plans_for_Group": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('List_Plans_for_Group')",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "microsoft-graph": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'microsoft-graph')]",
+                "connectionName": "microsoft-graph",
+                "id": "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'microsoft-graph')]",
+        "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "ListBuckets",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "properties": {
+                    "planId": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "List_buckets": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['planner']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/beta/planner/plans/@{encodeURIComponent(triggerBody()?['planId'])}/buckets"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "List_buckets": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('List_buckets')",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "planner": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'planner')]",
+                "connectionName": "planner",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/planner')]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'planner')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "ListTasks",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "properties": {
+                    "planId": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "List_tasks": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['planner']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/beta/planner/plans/@{encodeURIComponent(triggerBody()?['planId'])}/tasks"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "List_tasks": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('List_tasks')",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "planner": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'planner')]",
+                "connectionName": "planner",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/planner')]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'planner')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "CreateTask",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "properties": {
+                    "bucketId": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "planId": {
+                      "type": "string"
+                    },
+                    "startDateTime": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "Create_a_task": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {
+                  "bucketId": "@triggerBody()?['bucketId']",
+                  "planId": "@triggerBody()?['planId']",
+                  "startDateTime": "@triggerBody()?['startDateTime']",
+                  "title": "@triggerBody()?['title']"
+                },
+                "headers": {
+                  "prefer": " return=representation"
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['planner']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/beta/planner/tasks"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "Update_task_details": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('Create_a_task')",
+                "statusCode": 200
+              }
+            },
+            "Wait_Until_Task_Created": {
+              "inputs": {
+                "interval": {
+                  "count": 3,
+                  "unit": "Second"
+                }
+              },
+              "runAfter": {
+                "Create_a_task": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Wait"
+            },
+            "Update_task_details": {
+              "runAfter": {
+                "Wait_Until_Task_Created": [
+                  "Succeeded"
+                ]
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "body": {
+                  "description": "@triggerBody()?['description']"
+                },
+                "headers": {
+                  "prefer": " return=representation"
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['planner']['connectionId']"
+                  }
+                },
+                "method": "patch",
+                "path": "/beta/planner/tasks/@{encodeURIComponent(body('Create_a_task')?['id'])}/details"
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "planner": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'planner')]",
+                "connectionName": "planner",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/planner')]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'planner')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "GetTaskDetails",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "properties": {
+                    "taskId": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "Get_task_details": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['planner']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/beta/planner/tasks/@{encodeURIComponent(triggerBody()?['taskId'])}/details"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "Get_task_details": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('Get_task_details')",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "planner": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'planner')]",
+                "connectionName": "planner",
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/planner')]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'planner')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "DeleteTask",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "properties": {
+                    "etag": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "Delete_a_Task": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "headers": {
+                  "If-Match": "@triggerBody()?['etag']"
+                },
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['microsoft-graph']['connectionId']"
+                  }
+                },
+                "method": "delete",
+                "path": "/v1.0/planner/tasks/@{encodeURIComponent(triggerBody()?['id'])}"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "Delete_a_Task": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('Delete_a_Task')",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "microsoft-graph": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'microsoft-graph')]",
+                "connectionName": "microsoft-graph",
+                "id": "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'microsoft-graph')]",
+        "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "ListBucketTasks",
+      "apiVersion": "2016-06-01",
+      "location": "[variables('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "properties": {
+                    "bucketId": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "actions": {
+            "List_Tasks_for_Planner_Bucket": {
+              "runAfter": {},
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['microsoft-graph']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/v1.0/planner/buckets/@{encodeURIComponent(triggerBody()?['bucketId'])}/tasks"
+              }
+            },
+            "Response": {
+              "runAfter": {
+                "List_Tasks_for_Planner_Bucket": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Response",
+              "inputs": {
+                "body": "@body('List_Tasks_for_Planner_Bucket')",
+                "statusCode": 200
+              }
+            }
+          },
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "microsoft-graph": {
+                "connectionId": "[resourceId('Microsoft.Web/connections', 'microsoft-graph')]",
+                "connectionName": "microsoft-graph",
+                "id": "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', 'microsoft-graph')]",
+        "[resourceId('Microsoft.Web/customApis', variables('microsoftGraphConnectorName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('botWebAppName')]",
+      "apiVersion": "2015-08-01",
+      "location": "[variables('location')]",
+      "properties": {
+        "name": "[variables('botWebAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "siteConfig": {
+          "AlwaysOn": true
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "appsettings",
+          "properties": {
+            "LuisAppId": "[parameters('luisAppId')]",
+            "LuisAPIKey": "[listkeys(resourceId('Microsoft.CognitiveServices/accounts', variables('luisName')), '2016-02-01-preview').key1]",
+            "LuisAPIDomain": "[concat(reference(concat('Microsoft.CognitiveServices/accounts/', variables('luisName')), '2016-02-01-preview', 'Full').location, '.api.cognitive.microsoft.com')]",
+            "BotId": "[variables('botId')]",
+            "MicrosoftAppId": "[parameters('microsoftAppId')]",
+            "MicrosoftAppPassword": "[parameters('microsoftAppPassword')]",
+            "ida:TenantId": "[parameters('tenantId')]",
+            "ida:ClientId": "[parameters('botClientId')]",
+            "ida:ClientSecret": "[parameters('botClientSecret')]",
+            "ida:ClientCertThumbprint": "[reference(concat('Microsoft.Web/certificates/', variables('certName'))).thumbprint]",
+            "WEBSITE_LOAD_CERTIFICATES": "[reference(concat('Microsoft.Web/certificates/', variables('certName'))).thumbprint]",
+            "BaseSPSiteUrl": "[parameters('baseSPSiteUrl')]",
+            "GlobalTeam": "[parameters('globalTeam')]",
+            "LogicApp_GetJoinedTeams": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'GetJoinedTeams'), '/triggers/manual'), '2016-06-01').value]",
+            "LogicApp_ListPlans": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'ListPlans'), '/triggers/manual'), '2016-06-01').value]",
+            "LogicApp_ListBuckets": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'ListBuckets'), '/triggers/manual'), '2016-06-01').value]",
+            "LogicApp_ListPlanTasks": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'ListTasks'), '/triggers/manual'), '2016-06-01').value]",
+            "LogicApp_ListBucketTasks": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'ListBucketTasks'), '/triggers/manual'), '2016-06-01').value]",
+            "LogicApp_GetTaskDetails": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'GetTaskDetails'), '/triggers/manual'), '2016-06-01').value]",
+            "LogicApp_CreateTask": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'CreateTask'), '/triggers/manual'), '2016-06-01').value]",
+            "LogicApp_DeleteTask": "[listCallbackURL(concat(resourceId('Microsoft.Logic/workflows', 'DeleteTask'), '/triggers/manual'), '2016-06-01').value]",
+            "SourceCodeRepositoryUrl": "[parameters('sourceCodeRepositoryUrl')]",
+            "project": "Huddle.BotWebApp/Huddle.BotWebApp.csproj"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('botWebAppName'))]",
+            "[resourceId('Microsoft.Web/certificates', variables('certName'))]",
+            "[resourceId('Microsoft.CognitiveServices/accounts', variables('luisName'))]",
+            "[resourceId('Microsoft.Logic/workflows', 'GetJoinedTeams')]",
+            "[resourceId('Microsoft.Logic/workflows', 'ListPlans')]",
+            "[resourceId('Microsoft.Logic/workflows', 'ListBuckets')]",
+            "[resourceId('Microsoft.Logic/workflows', 'ListTasks')]",
+            "[resourceId('Microsoft.Logic/workflows', 'ListBucketTasks')]",
+            "[resourceId('Microsoft.Logic/workflows', 'GetTaskDetails')]",
+            "[resourceId('Microsoft.Logic/workflows', 'CreateTask')]",
+            "[resourceId('Microsoft.Logic/workflows', 'DeleteTask')]",
+            "[resourceId('Microsoft.BotService/botServices', variables('botId'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "connectionstrings",
+          "properties": {
+            "AzureWebJobsStorage": {
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
+              "type": "Custom"
+            },
+            "AzureWebJobsDashboard": {
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
+              "type": "Custom"
+            }
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('botWebAppName'))]",
+            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "web",
+          "type": "sourcecontrols",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('botWebAppName'))]",
+            "[resourceId('Microsoft.Web/Sites/config', variables('botWebAppName'), 'appsettings')]",
+            "[resourceId('Microsoft.Web/Sites/config', variables('botWebAppName'), 'connectionstrings')]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('sourceCodeRepositoryURL')]",
+            "branch": "[parameters('sourceCodeBranch')]",
+            "IsManualIntegration": "parameters('sourceCodeManualIntegration')]"
+          }
+        }
+      ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('metricAppName')]",
+      "apiVersion": "2015-08-01",
+      "location": "[variables('location')]",
+      "properties": {
+        "name": "[variables('metricAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "siteConfig": {
+          "AlwaysOn": true
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "appsettings",
+          "properties": {
+            "WEBSITE_NODE_DEFAULT_VERSION": "8.9.3",
+            "ida:TenantId": "[parameters('tenantId')]",
+            "ida:ClientId": "[parameters('metricClientId')]",
+            "ida:ClientSecret": "[parameters('metricClientSecret')]",
+            "ida:ClientCertThumbprint": "[reference(concat('Microsoft.Web/certificates/', variables('certName'))).thumbprint]",
+            "WEBSITE_LOAD_CERTIFICATES": "[reference(concat('Microsoft.Web/certificates/', variables('certName'))).thumbprint]",
+            "BaseSPSiteUrl": "[parameters('baseSPSiteUrl')]",
+            "SourceCodeRepositoryUrl": "[parameters('SourceCodeRepositoryUrl')]",
+            "command": "Huddle.MetricWebApp\\deploy.cmd"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('metricAppName'))]",
+            "[resourceId('Microsoft.Web/certificates/', variables('certName'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "web",
+          "type": "sourcecontrols",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('metricAppName'))]",
+            "[resourceId('Microsoft.Web/Sites/config', variables('metricAppName'), 'appsettings')]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('sourceCodeRepositoryURL')]",
+            "branch": "[parameters('sourceCodeBranch')]",
+            "IsManualIntegration": "parameters('sourceCodeManualIntegration')]"
+          }
+        }
+      ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Web/Sites/sourcecontrols', variables('botWebAppName'), 'web')]"
+      ]
+    }
+  ]
+}

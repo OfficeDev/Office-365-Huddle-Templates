@@ -3,6 +3,18 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Genereated files
+**/app/**/*.js
+**/app/**/*.js.map
+package-lock.json
+dist/
+
+# Token cache files
+**/App_Data/TokenCache/**
+!**/App_Data/TokenCache/Placeholder
+**/App_Data/Logs/**
+!**/App_Data/Logs/Placeholder
+
 # User-specific files
 *.suo
 *.user

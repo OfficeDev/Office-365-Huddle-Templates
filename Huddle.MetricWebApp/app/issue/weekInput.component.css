@@ -1,0 +1,17 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+ul { list-style: none; padding-left: 0; }
+ul li { display: inline-block; vertical-align: top; background-color: transparent; width: 40px; height: 45px; text-align: center; padding-top: 5px; margin-right: 1px; }
+ul li.odd { background-color: transparent; }
+ul.weekly > li { display: none; }
+ul.weekly > li:first-child { display: block; }
+.times-field { width: 28px; height: 29px; position: relative; }
+.times-field > input { font-size: 12px; width: 30px; height: 27px; border-radius: 2px; border: solid 1px #b5b5b5; text-align: center; }
+ul.weekly > li:first-child .times-field > input { width: 30px; }
+.times-field input.updated { background-image: url('/images/triangle.png'); background-repeat: no-repeat; background-position: top left; }
+.times-field .dollardiv { position: absolute; left: -8px; top: 4px; }
+.times-field .percentdiv { position: absolute; right: -13px; top: 3px; }
+.error { color: red; }

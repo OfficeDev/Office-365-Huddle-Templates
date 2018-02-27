@@ -1,0 +1,7 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.huddle-popup-container .save-container button span { text-transform: capitalize; }
+.huddle-popup-container .message { margin-bottom: 90px; }

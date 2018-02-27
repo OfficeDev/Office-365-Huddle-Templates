@@ -1,0 +1,54 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<form #metricForm="ngForm" name="metricForm" novalidate>
+    <div class="huddle-popup-container">
+        <div class="object-dialog">
+            <div class="ms-Dialog ms-Dialog--blocking ms-Dialog--close" [ngClass]="{'is-open': isShown}">
+                <div class="row">
+                    <div class="col-md-3 item-title">
+                        Issue
+                    </div>
+                    <div class="col-md-9 item-title">
+                        {{issue.name}}
+                    </div>
+                    <div class="col-md-3 item-title">
+                        Metric Name<span class="required">*</span>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="ms-TextField-field" [(ngModel)]="toAddMetric.name" name="name" required #name="ngModel" ngModel>
+                        <show-errors [control]="name"></show-errors>
+                    </div>
+                    <div class="col-md-3 item-title">
+                        Target Goal<span class="required">*</span>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="ms-TextField-field" [(ngModel)]="toAddMetric.targetGoal" name="goal" #goal="ngModel" ngModel required pattern="^[1-9]\d*$">
+                        <show-errors [control]="goal"></show-errors>
+                    </div>
+                    <div class="col-md-12 line">
+                        <hr />
+                    </div>
+                    <div class="col-md-12 line">
+                        I want to measure this metric in<span class="required">*</span>
+                        &nbsp;&nbsp;
+                        <input type="radio" value="Numbers" (click)="updateValueType('Numbers')" name="metricvalueType" checked /><span>Numbers  </span>
+                        <input type="radio" value="Percentages" (click)="updateValueType('Percentages')" name="metricvalueType" required /><span>Percentages  </span>
+                        <input type="radio" value="Dollars" (click)="updateValueType('Dollars')" name="metricvalueType" required /> <span>Dollars</span>
+                    </div>
+                    <div class="col-md-12 line">
+                        <hr />
+                    </div>
+                </div>
+            </div>
+            <div class="save-container">
+                <button class="btn-cancel" (click)="close()">
+                    <span class="">Cancel</span>
+                </button>
+                <button class="btn-save" (click)="saveMetric()" [disabled]="isSaving ||metricForm.invalid || metricForm.pending">
+                    <span class="">Save</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

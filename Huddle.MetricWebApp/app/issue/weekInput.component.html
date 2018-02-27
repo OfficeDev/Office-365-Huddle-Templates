@@ -1,0 +1,26 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<ul [hidden]="!(weekInputViewModel.isMetricValue)">
+    <li *ngFor="let weekDay of currentWeekDays;let i = index" [ngClass]="{'odd': rowIndex%2!=0}">
+        <div class="times-field">
+            <div *ngIf="valueType==='$'" class="dollardiv">
+                {{valueType==='$'?valueType:''}}
+            </div>
+            <input class="value-field" type="text" placeholder="" [(ngModel)]="weekInputViewModel?.metricValueArray[i].metricValues" (ngModelChange)="valueChange(weekInputViewModel?.metricValueArray[i])" [ngClass]="{'updated':weekInputViewModel?.metricValueArray[i].isUpdated}">
+            <div class="percentdiv" *ngIf="valueType==='%'">{{valueType==='%'?valueType:''}} </div>
+        </div>
+    </li>
+</ul>
+<ul [hidden]="weekInputViewModel.isMetricValue" [ngClass]="{'weekly':weekInputViewModel.isWeeklyReason}">
+    <li *ngFor="let weekDay of currentWeekDays;let i = index" [ngClass]="{'odd': rowIndex%2!=0}">
+        <div class="times-field">
+            <div *ngIf="valueType==='$'" class="dollardiv">
+                {{valueType==='$'?valueType:''}}
+            </div>
+            <input class="value-field" type="text" placeholder="" [(ngModel)]="weekInputViewModel?.reasonValueArray[i].reasonMetricValues" (ngModelChange)="valueChange(weekInputViewModel?.reasonValueArray[i])" [ngClass]="{'updated':weekInputViewModel?.reasonValueArray[i].isUpdated}">
+            <div class="percentdiv" *ngIf="valueType==='%'">{{valueType==='%'?valueType:''}} </div>
+        </div>
+    </li>
+</ul>
+<div class="error">{{errorMessage}}</div>

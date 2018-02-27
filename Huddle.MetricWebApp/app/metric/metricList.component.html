@@ -1,0 +1,61 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<div class="metric-list-section" [ngClass]="{'hidden': isHidden}">
+    <div class="metric-header">
+        <ul class="ul-metric">
+            <li class="icon-click hidden"></li>
+            <li>
+                <div class="metric-title">
+                    <label class="gray-header">metric(s)</label>
+                    <a class="action" (click)="addMetricClick()">add metric</a>
+                </div>
+            </li>
+            <li class="gray-header">start date</li>
+            <li class="gray-header">goal</li>
+            <li class="gray-header">
+                <ul class="ul-week-day">
+                    <li class="li-week-day" *ngFor="let weekDay of currentWeekDays">{{weekDay | date: 'MM/dd' }}</li>
+                </ul>
+            </li>
+            <li class="gray-header">active</li>
+        </ul>
+    </div>
+    <div class="metric-section border-box icon-action" *ngFor="let item of metricArray;let i = index" [ngClass]="{'expanded': item.expanded,'collapsed':!item.expanded}">
+        <div class="metric-info">
+            <ul class="ul-metric">
+                <li class="icon-click" (click)="expandMetricClick(item)"></li>
+                <li>{{item.metric.name}}</li>
+                <li>{{item.metric.startDate | date: 'shortDate' }}</li>
+                <li>{{getDisplayTargetGoal(item)}}</li>
+                <li><week-input (inputValueChange)="afterInputValueChange($event)" [rowIndex]="0" [weekInputViewModel]="metricWeekInputViewModelArray[i]" [valueType]="getDisplayValueType(item.metric)"></week-input></li>
+                <li>
+                    <ui-switch (change)="onSwitch(item.metric.id)" [checked]="item.metric.metricState==1?true:false" size="small" defaultBgColor="red"></ui-switch>
+                    <span class="on-off-label">{{item.metric.metricState==1?"ON":"OFF"}}</span>
+                    <a class="action" (click)="editMetricClick(item.metric)">edit</a>
+                </li>
+            </ul>
+        </div>
+        <reason-list #reasonLists [currentMetric]="item.metric"></reason-list>
+    </div>
+
+    <modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
+           (onOpen)="opened()" [cssClass]="cssClass" #modalAddMetric>
+        <modal-header>
+            <h4 class="modal-title">ADD NEW METRIC</h4>
+        </modal-header>
+        <modal-body>
+            <add-metric [issueId]="currentIssueId" (onClosed)="afterCloseNewMetric($event)"></add-metric>
+        </modal-body>
+    </modal>
+
+    <modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
+           (onOpen)="editMetricOpened()" [cssClass]="cssClass" #modalEditMetric>
+        <modal-header>
+            <h4 class="modal-title">EDIT METRIC</h4>
+        </modal-header>
+        <modal-body>
+            <edit-metric [issueId]="currentIssueId" (onClosed)="afterCloseEditMetric($event)" (onDeleted)="afterDeleteMetric($event)"></edit-metric>
+        </modal-body>
+    </modal>
+</div>

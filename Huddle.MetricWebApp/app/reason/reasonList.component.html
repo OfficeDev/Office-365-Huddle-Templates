@@ -1,0 +1,88 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<div class="reason-list-section" [ngClass]="{'hidden': isHidden}">
+    <div class="row">
+        <ul class="ul-metric">
+            <li class="li-blank"></li>
+            <li>
+                <span class="reason-label">DAILY REASON(S)</span> <a (click)="addReasonClick('Daily')" class="add-reason-link add-daily-reason">ADD REASON</a>
+            </li>
+            <li>
+                <span class="reason-label">REASON TRACKING</span>
+            </li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+    <div class="row" *ngFor="let item of reasonDailyArray;let i = index">
+        <ul class="ul-metric">
+            <li class="li-blank"></li>
+            <li>
+                {{item.name}}
+            </li>
+            <li>
+                {{item.reasonTracking}}
+            </li>
+            <li>
+                <week-input [rowIndex]="0" (inputValueChange)="afterInputValueChange($event)" [weekInputViewModel]="reasonDailyWeekInputViewModelArray[i]" [valueType]="getDisplayValueType(item)"></week-input>
+            </li>
+            <li>
+                <ui-switch (change)="onSwitch(item.id)" [checked]="item.reasonState==1?true:false" size="small" defaultBgColor="red"></ui-switch>
+                <span class="on-off-label">{{item.reasonState==1?"ON":"OFF"}}</span>
+                <a (click)="editReasonClick(item)" class="edit-reason-link">EDIT</a>
+            </li>
+        </ul>
+    </div>
+    <hr />
+    <div class="row">
+        <ul class="ul-metric">
+            <li class="li-blank"></li>
+            <li>
+                <span class="reason-label">WEEKLY REASON(S)</span> <a (click)="addReasonClick('Weekly')" class="add-reason-link">ADD REASON</a>
+            </li>
+            <li>
+                <span class="reason-label">REASON TRACKING</span>
+            </li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+    <div class="row" *ngFor="let item of reasonWeelyArray;let j = index">
+        <ul class="ul-metric">
+            <li class="li-blank"></li>
+            <li>
+                {{item.name}}
+            </li>
+            <li>
+                {{item.reasonTracking}}
+            </li>
+            <li>
+                <week-input [rowIndex]="0" [weekInputViewModel]="reasonWeeklyWeekInputViewModelArray[j]" [valueType]="getDisplayValueType(item)"></week-input>
+            </li>
+            <li>
+                <ui-switch (change)="onSwitch(item.id)" [checked]="item.reasonState==1?true:false" size="small" defaultBgColor="red"></ui-switch>
+                <span class="on-off-label">{{item.reasonState==1?"ON":"OFF"}}</span>
+                <a (click)="editReasonClick(item)" class="edit-reason-link">EDIT</a>
+            </li>
+        </ul>
+    </div>
+    <modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
+           (onOpen)="opened()" [cssClass]="cssClass" #modalAddReason>
+        <modal-header>
+            <h4 class="modal-title">ADD NEW REASON</h4>
+        </modal-header>
+        <modal-body>
+            <new-reason [relatedMetric]="currentMetric" (onClosed)="afterCloseNewReason($event)"></new-reason>
+        </modal-body>
+    </modal>
+    <modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
+           (onOpen)="editReasonOpened()" [cssClass]="cssClass" #modalEditReason>
+        <modal-header>
+            <h4 class="modal-title">EDIT REASON</h4>
+        </modal-header>
+        <modal-body>
+            <edit-reason [relatedMetric]="currentMetric" (onClosed)="afterCloseEditReason($event)"></edit-reason>
+        </modal-body>
+    </modal>
+</div>

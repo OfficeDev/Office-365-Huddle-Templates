@@ -1,0 +1,334 @@
+<?xml version="1.0"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information. -->
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.20.1711.0, Culture=neutral, PublicKeyToken=3751622786b357c2" />
+  <pnp:Templates ID="CONTAINER-TEMPLATE-851DADA8EC80445998442630FEF36D08">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-851DADA8EC80445998442630FEF36D08" Version="1" BaseSiteTemplate="STS#0" Scope="RootSite">
+      <pnp:SiteFields>
+        <Field ID="{4a4b8741-8e3f-4a03-a49c-1cc2f3ca2c78}" Type="Text" DisplayName="Team Id" StaticName="HuddleTeamId" Name="HuddleTeamId" Required="TRUE" Indexed="TRUE" MaxLength="255" Group="Huddle" />
+        <Field ID="{c9b5a030-81df-4a3f-b755-14659d0fce3e}" Type="Text" DisplayName="Task Id" StaticName="HuddleTaskId" Name="HuddleTaskId" Required="TRUE" Indexed="TRUE" MaxLength="255" Group="Huddle" />
+        <Field ID="{988bc34a-1334-449d-a90e-543524519b66}" Type="Text" DisplayName="Task Status" StaticName="HuddleTaskStatus" Name="HuddleTaskStatus"  Required="TRUE" Indexed="TRUE" MaxLength="255" Group="Huddle" />
+        <Field ID="{b374f4c1-6e46-48f0-b341-5d69a418da41}" Type="Text" DisplayName="Task Name" StaticName="HuddleTaskName" Name="HuddleTaskName" Required="TRUE" Indexed="FALSE" MaxLength="255" Group="Huddle" />
+        <Field ID="{e10564c1-2c59-4f76-b50e-ee90123f8f17}" Type="Text" DisplayName="Reason Tracking" StaticName="HuddleReasonTracking" Name="HuddleReasonTracking" Required="TRUE" Indexed="FALSE" MaxLength="255" Group="Huddle" />
+        <Field ID="{baecd56e-2089-47ad-90fb-abc24bb39478}" Type="Number" DisplayName="Target Goal"  StaticName="HuddleTargetGoal" Name="HuddleTargetGoal" Required="TRUE" Indexed="FALSE" Group="Huddle" />
+        <Field ID="{234abfe8-fc87-4a72-be04-4d3d8455d107}" Type="Number" DisplayName="Value" StaticName="HuddleValue" Name="HuddleValue" Required="TRUE" Indexed="FALSE" Group="Huddle"  />
+        <Field ID="{f64ab878-7aed-449d-8f87-30ca3b6e50aa}" Type="DateTime" DisplayName="Date" StaticName="HuddleDate" Name="HuddleDate" Required="TRUE" Indexed="TRUE" Format="DateOnly" Group="Huddle" />
+        <Field ID="{ea421ffd-b5cd-40b6-95fd-019ba2b102f8}" Type="DateTime" DisplayName="Input Date" StaticName="HuddleInputDate" Name="HuddleInputDate" Required="TRUE" Indexed="FALSE" Format="DateOnly" Group="Huddle" />
+        <Field ID="{8bd1fd35-c4c2-4f01-9ce1-1fa757685714}" Type="DateTime" DisplayName="Task Start Date" StaticName="HuddleTaskStartDate" Name="HuddleTaskStartDate" Required="FALSE" Indexed="FALSE" Format="DateOnly" Group="Huddle" />
+        <Field ID="{29be82fe-bd0c-464b-8116-37194db7afa2}" Type="DateTime" DisplayName="Task Completed Date" StaticName="HuddleTaskCompletedDate" Name="HuddleTaskCompletedDate" Required="FALSE" Indexed="FALSE" Format="DateOnly" Group="Huddle" />
+        <Field ID="{9556043a-72ec-4502-903d-d571b0b8d602}" Type="URL" DisplayName="Task URL" StaticName="HuddleTaskURL" Name="HuddleTaskURL" Required="TRUE" Indexed="FALSE" Format="Hyperlink" Group="Huddle" />
+        <Field ID="{3844fa56-10a4-4bbb-a97d-c752d0203d79}" Type="User" DisplayName="Owner" StaticName="HuddleOwner" Name="HuddleOwner" Required="TRUE" Indexed="FALSE" Group="Huddle" />
+        <Field ID="{28417b22-d5d1-44e0-a0fd-45135f97e473}" Type="Choice" DisplayName="Value Type" StaticName="HuddleValueType" Name="HuddleValueType" Required="TRUE" Indexed="TRUE" MaxLength="255" Group="Huddle">
+          <Default>Numbers</Default>
+          <CHOICES>
+            <CHOICE>Numbers</CHOICE>
+            <CHOICE>Percentages</CHOICE>
+            <CHOICE>Dollars</CHOICE>
+          </CHOICES>
+        </Field>
+        <Field ID="{d8bf0f9c-f68f-4a07-9f71-b315449970a5}" Type="Choice" DisplayName="State" StaticName="HuddleState" Name="HuddleState" Required="TRUE" Indexed="TRUE" Format="Dropdown" FillInChoice="FALSE" Group="Huddle">
+          <Default>1</Default>
+          <CHOICES>
+            <CHOICE>1</CHOICE>
+            <CHOICE>0</CHOICE>
+          </CHOICES>
+        </Field>
+        <Field ID="{df27e318-c374-4a31-a542-a00ff1be0807}" Type="Choice" DisplayName="Tracking Frequency" StaticName="HuddleTrackingFrequency" Name="HuddleTrackingFrequency" Required="TRUE" Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" Group="Huddle">
+          <Default>Daily</Default>
+          <CHOICES>
+            <CHOICE>Daily</CHOICE>
+            <CHOICE>Weekly</CHOICE>
+          </CHOICES>
+        </Field>
+        <Field ID="{c8fe63bb-eaf0-4ba2-a627-7bc28150c8e0}" Type="Lookup" DisplayName="Category" StaticName="HuddleCategory" Name="HuddleCategory" Required="TRUE" List="{{listid:Categories}}" ShowField="Title" Group="Huddle" />
+        <Field ID="{d347458e-6673-49cf-8b02-1780aa541f0c}" Type="Lookup" DisplayName="Issue" StaticName="HuddleIssue" Name="HuddleIssue" Required="TRUE" List="{{listid:Issues}}" ShowField="Title" Group="Huddle" />
+        <Field ID="{edd87a3b-3886-40b6-8a8d-302a210d0642}" Type="Lookup" DisplayName="Metric" StaticName="HuddleMetric" Name="HuddleMetric" Required="TRUE" List="{{listid:Metrics}}" ShowField="Title" Group="Huddle" />
+        <Field ID="{31b0a4a7-6311-40c6-b3ea-ddbeddc2a4c9}" Type="Lookup" DisplayName="Metric" StaticName="HuddleMetricNullable" Name="HuddleMetricNullable" Required="FALSE" List="{{listid:Metrics}}" ShowField="Title" Group="Huddle" />
+        <Field ID="{0f3f491a-2bf8-4ac5-ac29-cc1b5a34a2e3}" Type="Lookup" DisplayName="Reason" StaticName="HuddleReason" Name="HuddleReason" Required="TRUE" List="{{listid:Reasons}}" ShowField="Title" Group="Huddle" />
+      </pnp:SiteFields>
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x01007FB81E7B5451B440ADCF586174ABA29D" Name="HuddleCategory" Group="Huddle">
+        </pnp:ContentType>
+        <pnp:ContentType ID="0x010092DEC58FDBD0D446A14F47912C7EE2FB" Name="HuddleIssue" Group="Huddle">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="c8fe63bb-eaf0-4ba2-a627-7bc28150c8e0" Name="HuddleCategory" Required="true" />
+            <pnp:FieldRef ID="d8bf0f9c-f68f-4a07-9f71-b315449970a5" Name="HuddleState" Required="true" />
+            <pnp:FieldRef ID="3844fa56-10a4-4bbb-a97d-c752d0203d79" Name="HuddleOwner" Required="true" />
+            <pnp:FieldRef ID="4a4b8741-8e3f-4a03-a49c-1cc2f3ca2c78" Name="HuddleTeamId" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+        <pnp:ContentType ID="0x01001C27F98103CE4566A6C42FCC51BD6A3A" Name="HuddleMetric" Group="Huddle">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="d347458e-6673-49cf-8b02-1780aa541f0c" Name="HuddleIssue" Required="true" />
+            <pnp:FieldRef ID="baecd56e-2089-47ad-90fb-abc24bb39478" Name="HuddleTargetGoal" Required="true" />
+            <pnp:FieldRef ID="d8bf0f9c-f68f-4a07-9f71-b315449970a5" Name="HuddleState" Required="true" />
+            <pnp:FieldRef ID="28417b22-d5d1-44e0-a0fd-45135f97e473" Name="HuddleValueType" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+        <pnp:ContentType ID="0x010066635468CA38C24BA3270BF4F9F1C6DD" Name="HuddleReason" Group="Huddle">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="e10564c1-2c59-4f76-b50e-ee90123f8f17" Name="HuddleReasonTracking" Required="true" />
+            <pnp:FieldRef ID="edd87a3b-3886-40b6-8a8d-302a210d0642" Name="HuddleMetric" Required="true" />
+            <pnp:FieldRef ID="d8bf0f9c-f68f-4a07-9f71-b315449970a5" Name="HuddleState" Required="true" />
+            <pnp:FieldRef ID="df27e318-c374-4a31-a542-a00ff1be0807" Name="HuddleTrackingFrequency" Required="true" />
+            <pnp:FieldRef ID="28417b22-d5d1-44e0-a0fd-45135f97e473" Name="HuddleValueType" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+        <pnp:ContentType ID="0x01005A829A59DC99074882B4D3D3BB5DDB53" Name="HuddleMetricValue" Group="Huddle">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" />
+            <pnp:FieldRef ID="edd87a3b-3886-40b6-8a8d-302a210d0642" Name="HuddleMetric" Required="true" />
+            <pnp:FieldRef ID="f64ab878-7aed-449d-8f87-30ca3b6e50aa" Name="HuddleDate" Required="true" />
+            <pnp:FieldRef ID="234abfe8-fc87-4a72-be04-4d3d8455d107" Name="HuddleValue" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+        <pnp:ContentType ID="0x01006B1F2C62DC44F0428A00D3C4AAC49454" Name="HuddleReasonValue" Group="Huddle">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" />
+            <pnp:FieldRef ID="0f3f491a-2bf8-4ac5-ac29-cc1b5a34a2e3" Name="HuddleReason" Required="true" />
+            <pnp:FieldRef ID="f64ab878-7aed-449d-8f87-30ca3b6e50aa" Name="HuddleDate" Required="true" />
+            <pnp:FieldRef ID="234abfe8-fc87-4a72-be04-4d3d8455d107" Name="HuddleValue" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+        <pnp:ContentType ID="0x0100F247923794C63A4A875209B980C77798" Name="HuddleMetricIdea" Group="Huddle">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" />
+            <pnp:FieldRef ID="31b0a4a7-6311-40c6-b3ea-ddbeddc2a4c9" Name="HuddleMetricNullable" Required="false" />
+            <pnp:FieldRef ID="c9b5a030-81df-4a3f-b755-14659d0fce3e" Name="HuddleTaskId" Required="true" />
+            <pnp:FieldRef ID="9556043a-72ec-4502-903d-d571b0b8d602" Name="HuddleTaskURL" Required="true" />
+            <pnp:FieldRef ID="b374f4c1-6e46-48f0-b341-5d69a418da41" Name="HuddleTaskName" Required="true" />
+            <pnp:FieldRef ID="ea421ffd-b5cd-40b6-95fd-019ba2b102f8" Name="HuddleInputDate" Required="true" />
+            <pnp:FieldRef ID="8bd1fd35-c4c2-4f01-9ce1-1fa757685714" Name="HuddleTaskStartDate" Required="true" />
+            <pnp:FieldRef ID="988bc34a-1334-449d-a90e-543524519b66" Name="HuddleTaskStatus" Required="true" />
+            <pnp:FieldRef ID="29be82fe-bd0c-464b-8116-37194db7afa2" Name="HuddleTaskCompletedDate" Required="false" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Categories" TemplateType="100" Url="Lists/Categories" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false" >
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01007FB81E7B5451B440ADCF586174ABA29D" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Hidden="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{371EF7AD-3437-4C1F-9A20-4D1D1CC97CEB}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Level="1" BaseViewID="1" ContentTypeID="0x">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="LinkTitle" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Issues" TemplateType="100" Url="Lists/Issues" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x010092DEC58FDBD0D446A14F47912C7EE2FB" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Hidden="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{0533730C-4AD1-4F1B-8B93-7855429310BC}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Level="1" BaseViewID="1" ContentTypeID="0x">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="HuddleCategory" />
+                <FieldRef Name="HuddleState" />
+                <FieldRef Name="HuddleOwner" />
+                <FieldRef Name="HuddleTeamId" />
+                <FieldRef Name="Created" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="c8fe63bb-eaf0-4ba2-a627-7bc28150c8e0" Name="HuddleCategory" DisplayName="Category" Required="true" />
+            <pnp:FieldRef ID="d8bf0f9c-f68f-4a07-9f71-b315449970a5" Name="HuddleState" DisplayName="State" Required="true" />
+            <pnp:FieldRef ID="3844fa56-10a4-4bbb-a97d-c752d0203d79" Name="HuddleOwner" DisplayName="Owner" Required="true" />
+            <pnp:FieldRef ID="4a4b8741-8e3f-4a03-a49c-1cc2f3ca2c78" Name="HuddleTeamId" DisplayName="Team Id" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Metrics" TemplateType="100" Url="Lists/Metrics" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01001C27F98103CE4566A6C42FCC51BD6A3A" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Hidden="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{0533730C-4AD1-4F1B-8B93-7855429310BC}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Level="1" BaseViewID="1" ContentTypeID="0x">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="HuddleIssue" />
+                <FieldRef Name="HuddleTargetGoal" />
+                <FieldRef Name="HuddleState" />
+                <FieldRef Name="HuddleValueType" />
+                <FieldRef Name="Created" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="d347458e-6673-49cf-8b02-1780aa541f0c" Name="HuddleIssue" DisplayName="Issue" Required="true" />
+            <pnp:FieldRef ID="baecd56e-2089-47ad-90fb-abc24bb39478" Name="HuddleTargetGoal" DisplayName="Target Goal" Required="true" />
+            <pnp:FieldRef ID="d8bf0f9c-f68f-4a07-9f71-b315449970a5" Name="HuddleState" DisplayName="State" Required="true" />
+            <pnp:FieldRef ID="28417b22-d5d1-44e0-a0fd-45135f97e473" Name="HuddleValueType" DisplayName="Value Type" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Reasons" TemplateType="100" Url="Lists/Reasons" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x010066635468CA38C24BA3270BF4F9F1C6DD" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Hidden="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{BAB18049-38C3-4A1F-813E-E43705AEE6AB}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/huddle/Lists/Reasons/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="HuddleReasonTracking" />
+                <FieldRef Name="HuddleMetric" />
+                <FieldRef Name="HuddleState" />
+                <FieldRef Name="HuddleTrackingFrequency" />
+                <FieldRef Name="HuddleValueType" />
+                <FieldRef Name="Created" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="e10564c1-2c59-4f76-b50e-ee90123f8f17" Name="HuddleReasonTracking" DisplayName="Reason Tracking" Required="true" />
+            <pnp:FieldRef ID="edd87a3b-3886-40b6-8a8d-302a210d0642" Name="HuddleMetric" DisplayName="Metric" Required="true" />
+            <pnp:FieldRef ID="d8bf0f9c-f68f-4a07-9f71-b315449970a5" Name="HuddleState" DisplayName="State" Required="true" />
+            <pnp:FieldRef ID="df27e318-c374-4a31-a542-a00ff1be0807" Name="HuddleTrackingFrequency" DisplayName="Tracking Frequency" Required="true" />
+            <pnp:FieldRef ID="28417b22-d5d1-44e0-a0fd-45135f97e473" Name="HuddleValueType" DisplayName="Value Type" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Metric Values" TemplateType="100" Url="Lists/Metric Values" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005A829A59DC99074882B4D3D3BB5DDB53" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Hidden="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{322A098F-1638-4482-B6B6-D1ADE88BDC29}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Level="1" BaseViewID="1" ContentTypeID="0x">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="HuddleMetric" />
+                <FieldRef Name="HuddleDate" />
+                <FieldRef Name="HuddleValue" />
+                <FieldRef Name="Modified" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="edd87a3b-3886-40b6-8a8d-302a210d0642" Name="HuddleMetric" DisplayName="Metric" Required="true" />
+            <pnp:FieldRef ID="f64ab878-7aed-449d-8f87-30ca3b6e50aa" Name="HuddleDate" DisplayName="Date" Required="true" />
+            <pnp:FieldRef ID="234abfe8-fc87-4a72-be04-4d3d8455d107" Name="HuddleValue" DisplayName="Value" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Reason Values" TemplateType="100" Url="Lists/Reason Values" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01006B1F2C62DC44F0428A00D3C4AAC49454" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Hidden="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{BD7EC26D-D3B3-4B64-B1F8-B0838BDFDB45}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Level="1" BaseViewID="1" ContentTypeID="0x">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="HuddleReason" />
+                <FieldRef Name="HuddleDate" />
+                <FieldRef Name="HuddleValue" />
+                <FieldRef Name="Modified" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="0f3f491a-2bf8-4ac5-ac29-cc1b5a34a2e3" Name="HuddleReason" DisplayName="Reason" Required="true" />
+            <pnp:FieldRef ID="f64ab878-7aed-449d-8f87-30ca3b6e50aa" Name="HuddleDate" DisplayName="Date" Required="true" />
+            <pnp:FieldRef ID="234abfe8-fc87-4a72-be04-4d3d8455d107" Name="HuddleValue" DisplayName="Value" Required="true" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Metric Ideas" TemplateType="100" Url="Lists/Metric Ideas" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0100F247923794C63A4A875209B980C77798" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Hidden="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{1D2E3F15-3483-47EE-99E7-2A560FC2F1D7}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Level="1" BaseViewID="1" ContentTypeID="0x">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="HuddleMetricNullable" />
+                <FieldRef Name="HuddleTaskId" />
+                <FieldRef Name="HuddleTaskURL" />
+                <FieldRef Name="HuddleTaskName" />
+                <FieldRef Name="HuddleTaskStartDate" />
+                <FieldRef Name="HuddleTaskStatus" />
+                <FieldRef Name="HuddleTaskCompletedDate" />
+                <FieldRef Name="HuddleInputDate" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="31b0a4a7-6311-40c6-b3ea-ddbeddc2a4c9" Name="HuddleMetricNullable" DisplayName="Metric" Required="false" />
+            <pnp:FieldRef ID="c9b5a030-81df-4a3f-b755-14659d0fce3e" Name="HuddleTaskId" DisplayName="Task Id" Required="true" />
+            <pnp:FieldRef ID="9556043a-72ec-4502-903d-d571b0b8d602" Name="HuddleTaskURL" DisplayName="Task URL" Required="true" />
+            <pnp:FieldRef ID="b374f4c1-6e46-48f0-b341-5d69a418da41" Name="HuddleTaskName" DisplayName="Task Name" Required="true" />
+            <pnp:FieldRef ID="ea421ffd-b5cd-40b6-95fd-019ba2b102f8" Name="HuddleInputDate" DisplayName="Input Date" Required="true" />
+            <pnp:FieldRef ID="8bd1fd35-c4c2-4f01-9ce1-1fa757685714" Name="HuddleTaskStartDate" DisplayName="Task Start Date" Required="true" />
+            <pnp:FieldRef ID="988bc34a-1334-449d-a90e-543524519b66" Name="HuddleTaskStatus" DisplayName="Task Status" Required="true" />
+            <pnp:FieldRef ID="29be82fe-bd0c-464b-8116-37194db7afa2" Name="HuddleTaskCompletedDate" DisplayName="Task Completed Date" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+      </pnp:Lists>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

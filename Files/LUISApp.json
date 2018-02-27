@@ -1,0 +1,175 @@
+{
+  "luis_schema_version": "2.1.0",
+  "versionId": "0.1",
+  "name": "LUIS App for Huddle Bot",
+  "desc": "",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "Data.Clear"
+    },
+    {
+      "name": "Idea.Create"
+    },
+    {
+      "name": "Idea.List"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "Team.Switch"
+    }
+  ],
+  "entities": [],
+  "composites": [],
+  "closedLists": [
+    {
+      "name": "Idea.Status",
+      "subLists": [
+        {
+          "canonicalForm": "New",
+          "list": []
+        },
+        {
+          "canonicalForm": "In progress",
+          "list": []
+        },
+        {
+          "canonicalForm": "Completed",
+          "list": [
+            "complete"
+          ]
+        },
+        {
+          "canonicalForm": "Impactful",
+          "list": []
+        },
+        {
+          "canonicalForm": "Shareable",
+          "list": [
+            "Sharable"
+          ]
+        }
+      ]
+    }
+  ],
+  "bing_entities": [
+    "datetimeV2"
+  ],
+  "actions": [],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "clear data",
+      "intent": "Data.Clear",
+      "entities": []
+    },
+    {
+      "text": "new idea",
+      "intent": "Idea.Create",
+      "entities": []
+    },
+    {
+      "text": "change team",
+      "intent": "Team.Switch",
+      "entities": []
+    },
+    {
+      "text": "create idea",
+      "intent": "Idea.Create",
+      "entities": []
+    },
+    {
+      "text": "Move the BBQ party to Friday",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "select team",
+      "intent": "Team.Switch",
+      "entities": []
+    },
+    {
+      "text": "Call dad Mike",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "Email cloney John",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "The workshop will last for 10 hours",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "email cloney John",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "switch team",
+      "intent": "Team.Switch",
+      "entities": []
+    },
+    {
+      "text": "show me new ideas",
+      "intent": "Idea.List",
+      "entities": []
+    },
+    {
+      "text": "create a new idea",
+      "intent": "Idea.Create",
+      "entities": []
+    },
+    {
+      "text": "make a new idea",
+      "intent": "Idea.Create",
+      "entities": []
+    },
+    {
+      "text": "show me ideas in progress",
+      "intent": "Idea.List",
+      "entities": []
+    },
+    {
+      "text": "create an idea",
+      "intent": "Idea.Create",
+      "entities": []
+    },
+    {
+      "text": "list new idea",
+      "intent": "Idea.List",
+      "entities": []
+    },
+    {
+      "text": "show me idea in progress",
+      "intent": "Idea.List",
+      "entities": []
+    },
+    {
+      "text": "show me new idea",
+      "intent": "Idea.List",
+      "entities": []
+    },
+    {
+      "text": "list ideas in progress",
+      "intent": "Idea.List",
+      "entities": []
+    },
+    {
+      "text": "list idea in progress",
+      "intent": "Idea.List",
+      "entities": []
+    },
+    {
+      "text": "list new ideas",
+      "intent": "Idea.List",
+      "entities": []
+    }
+  ]
+}

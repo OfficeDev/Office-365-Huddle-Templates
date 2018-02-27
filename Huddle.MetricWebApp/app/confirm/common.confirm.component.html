@@ -1,0 +1,24 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" #modalConfirm class="confirmDialog">
+    <modal-header>
+        <h4 class="modal-title">{{title}}</h4>
+    </modal-header>
+    <modal-body>
+        <div class="huddle-popup-container">
+            <div class="message">
+                {{message}}
+            </div>
+            <hr />
+            <div class="save-container">
+                <button class="btn-cancel" (click)="cancel()">
+                    <span class="">{{cancelTxt}}</span>
+                </button>
+                <button class="btn-save" (click)="confirm()">
+                    <span class="">{{confirmTxt}}</span>
+                </button>
+            </div>
+        </div>
+    </modal-body>
+</modal>

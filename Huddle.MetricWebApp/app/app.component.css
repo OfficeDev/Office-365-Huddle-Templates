@@ -1,0 +1,7 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.container { max-width: 1366px; width: 1366px; padding-left: 0; padding-right: 0; min-width: 1024px !important; }
+.container > * { display: inline-block; vertical-align: top; }

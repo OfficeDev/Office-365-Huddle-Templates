@@ -1,0 +1,25 @@
+﻿@*
+    *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+    *   * See LICENSE in the project root for license information.
+*@
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Data</title>
+</head>
+<body>
+    <h2>Clear Data</h2>
+    @using (Html.BeginForm("ClearDataPost", null, FormMethod.Post, null))
+    {
+        <p>Click the button below to delete issue and metric data from SharePoint lists.</p>
+        <p style="color: red">Note: this action can not be undone.</p>
+        <button type="submit">Clear</button>
+        <p>@TempData["ClearDataResult"]</p>
+    }
+</body>
+</html>

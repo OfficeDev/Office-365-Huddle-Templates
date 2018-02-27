@@ -1,0 +1,10 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+[hidden] { display: none !important; }
+.container-left, .container-right { display: inline-block; vertical-align: top; }
+.container-left[hidden] { display: none; }
+.container-right { width: 80%; }
+label.ms-Label, .ms-TextField-field, .ms-Dropdown-title, .ms-ListItem, .ms-Button-label, .ms-Dialog-subText { font-family: "Segoe UI"; }

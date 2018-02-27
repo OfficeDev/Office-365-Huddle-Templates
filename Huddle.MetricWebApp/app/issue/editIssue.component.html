@@ -1,0 +1,68 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<form #issueForm="ngForm" name="issueForm" novalidate>
+    <div class="huddle-popup-container">
+        <div class="add-issue-dialog">
+            <div class="ms-Dialog ms-Dialog--blocking ms-Dialog--close" [ngClass]="{'is-open': isShown}">
+                <div class="row">
+                    <div class="col-md-2  item-title">
+                        Issue Name<span class="required">*</span>
+                    </div>
+                    <div class="col-md-10">
+                        <input type="text" class="ms-TextField-field" [(ngModel)]="toEditIssue.name" name="name" required ngModel #name="ngModel">
+                        <show-errors [control]="name"></show-errors>
+                    </div>
+                    <div class="col-md-2  item-title">
+                        Pillar<span class="required">*</span>
+                    </div>
+                    <div class="col-md-10">
+                        <select class="ms-Dropdown-select" [(ngModel)]="selectedCategory" (ngModelChange)="selectCategory($event)" name="categoryName">
+                            <option *ngFor="let category of categories" [selected]="toEditIssue.category.name===category.name">{{category.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 item-title">
+                        Owner
+                    </div>
+                    <div class="col-md-10">
+                        <select class="ms-Dropdown-select" [(ngModel)]="selectedUser" (ngModelChange)="selectUser($event)" name="owner">
+                            <option *ngFor="let user of users" value="{{user.mail}}" [selected]="toEditIssue.owner===user.name">{{user.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2  item-title">
+                        Active
+                    </div>
+                    <div class="col-md-10">
+                        <ui-switch [checked]="toEditIssue.issueState==1?true:false" size="small" [(ngModel)]="toEditIssue.issueState" name="switch" defaultBgColor="red"></ui-switch>
+                        <span class="on-off-label">{{toEditIssue.issueState==1?"ON":"OFF"}}</span>
+                    </div>
+                </div>
+                <hr />
+            </div>
+            <div class="save-container">
+                <div class="left">
+                    <button class="btn-cancel" (click)="delete()">
+                        <span class="">Delete</span>
+                    </button>
+                </div>
+                <div class="right">
+                    <button class="btn-cancel" (click)="close()">
+                        <span class="">Cancel</span>
+                    </button>
+                    <button class="btn-save" (click)="saveIssue()" [disabled]="isSaving ||issueForm.invalid || issueForm.pending">
+                        <span class="">Save</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onOpen)="deleteOpened()" #modalDelete class="deleteDialog">
+    <modal-header>
+        <h4 class="modal-title">{{deleteTitle}}</h4>
+    </modal-header>
+    <modal-body>
+        <confirm-form (onClosed)="afterCloseDelete($event)"></confirm-form>
+    </modal-body>
+</modal>

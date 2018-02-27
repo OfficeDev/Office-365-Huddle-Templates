@@ -1,0 +1,32 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.add-reason-link { padding-left: 15px; background-image: url('/images/plus-sign-copy.png'); background-position: left center; background-repeat: no-repeat; background-size: 10px; font-family: "Segoe UI"; font-size: 10px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 4.8; letter-spacing: normal; text-align: left; color: #00539d; margin-left: 4px; }
+.edit-reason-link { padding-left: 15px; background-image: url('/images/icons-8-edit-32-px.png'); background-position: left center; background-repeat: no-repeat; background-size: 10px; font-family: "Segoe UI"; font-size: 10px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 4.8; letter-spacing: normal; text-align: left; color: #00539d; cursor: pointer; text-decoration: none; position: relative; top: -5px; }
+.reason-label { font-family: "Segoe UI"; font-size: 12px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 5; letter-spacing: normal; text-align: left; color: #7c7c7c; }
+hr { margin-bottom: 0; }
+.on-off-label { font-family: "Segoe UI"; font-size: 10px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.6; letter-spacing: normal; text-align: center; color: #000000; display: inline; margin-right: 10px; position: relative; top: -5px; }
+.reason-control-area { top: -8px; position: absolute; padding-left: 6px; display: inline-block; }
+.reason-list-section .row { margin-right: 0; }
+.reason-list-section ul { list-style: none; }
+.reason-list-section ul.ul-metric { margin-bottom: 0; position: relative; width: 930px; }
+.reason-list-section ul li { display: inline-block; }
+.reason-list-section ul li.icon-click { width: 17px; position: absolute; height: 17px; left: 10px; top: 16px; cursor: pointer; }
+.reason-list-section ul.ul-metric li { vertical-align: text-bottom; }
+.reason-list-section ul.ul-metric li:nth-child(1) { width: 17px; position: absolute; height: 17px; left: 10px; top: 16px; }
+.reason-list-section ul.ul-metric li:nth-child(2) { width: 258px; }
+.reason-list-section ul.ul-metric li:nth-child(3) { width: 168px; }
+.reason-list-section ul.ul-metric li:nth-child(4) { width: 302px; vertical-align: middle; }
+.reason-list-section ul.ul-metric li:nth-child(5) { width: 136px; text-align: right; vertical-align: middle; }
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    .reason-list-section ul.ul-metric li:nth-child(5) { padding-left: 20px; }
+}
+
+.reason-list-section .metric-info ul.ul-metric { min-height: 50px; padding-top: 8px; padding-left: 35px; width: 930px; }
+.reason-list-section .li-blank { width: 0px; }
+.reason-list-section .metric-info ul.ul-metric li a.action { background-image: url(/images/icons-8-edit-32-px@3x.png); vertical-align: super; }
+.reason-list-section .row { margin-left: 0; }
+.add-daily-reason { margin-left: 16px; }

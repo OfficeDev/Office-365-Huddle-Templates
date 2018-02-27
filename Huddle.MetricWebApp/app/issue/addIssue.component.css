@@ -1,0 +1,37 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.add-issue-dialog .required { color: #ff0000; padding-left: 5px; }
+.add-issue-dialog .ms-Dialog-content { display: table; }
+.add-issue-dialog .ms-Dialog-content .content-block { display: table-row; }
+.add-issue-dialog .ms-Dialog-content .content-block > * { display: table-cell; }
+.add-issue-dialog .ms-TextField > *, .add-issue-dialog .dropdown-container > * { display: inline-block; vertical-align: middle; }
+.add-issue-dialog .ms-Dialog { padding: 0; font-family: "Segoe UI"; max-width: none; }
+.add-issue-dialog .ms-Dialog-title { background-color: #ebebeb; margin-right: 0; line-height: 30px; }
+.add-issue-dialog .ms-Dialog-title, .add-issue-dialog .ms-Dialog-content { padding: 0 30px; }
+.add-issue-dialog .ms-Dialog-title, .add-issue-dialog .ms-Dialog-content .left { color: #464646; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+.add-issue-dialog .ms-Dialog-content :not(.content-block:nth-child(2)) .left { padding-right: 20px; width: 87px; }
+.add-issue-dialog .ms-Dialog-content .right { width: 550px; }
+.add-issue-dialog .ms-Dialog-content .right :not(.required) { color: #010101; font-size: 12px; }
+.add-issue-dialog .ms-Dialog-content .right > :not(.divider) { margin-bottom: 13px; }
+.add-issue-dialog .ms-TextField .ms-Label, .add-issue-dialog .dropdown-container .ms-Label { font-weight: normal; padding-right: 8px; width: 58px; }
+.add-issue-dialog .content-block:last-child .ms-TextField .ms-Label { text-align: right; }
+.add-issue-dialog .ms-TextField .ms-Label, .add-issue-dialog .dropdown-container .ms-Label { font-weight: normal; padding-right: 8px; width: 58px; }
+.add-issue-dialog .ms-TextField .ms-TextField-field, .add-issue-dialog .dropdown-container .ms-Dropdown { width: 423px; max-width: none; }
+.add-issue-dialog .dropdown-container .ms-Dropdown { margin-bottom: 0; }
+.add-issue-dialog .ms-TextField .ms-TextField-field, .add-issue-dialog .dropdown-container .ms-Dropdown .ms-Dropdown-title { border-radius: 5px; border-color: #a1a1a1; }
+.add-issue-dialog .ms-Dialog.is-open + .ms-Overlay { display: block; z-index: 9; }
+.add-issue-dialog .ms-Dialog-buttonClose { position: absolute; top: -41px; left: 676px; z-index: 2; cursor: pointer; width: 30px; }
+.add-issue-dialog .ms-Dialog-buttonClose:disabled { cursor: default; }
+.add-issue-dialog .ms-Dialog-buttonClose .ms-Icon.ms-Icon--Cancel { font-size: 22px; line-height: 22px; color: #ffffff; }
+.add-issue-dialog .divider { height: 1px; background-color: #ebebeb; margin-top: 16px; margin-bottom: 13px; }
+.add-issue-dialog .ms-Dialog .ms-Dialog-actions { text-align: center; }
+.add-issue-dialog .ms-Dialog .ms-Dialog-actions .ms-Button { width: 108px; height: 34px; border-radius: 5px; background-color: #018fbf; padding-top: 1px; margin-top: 5px; margin-bottom: 30px; }
+.add-issue-dialog .ms-Dialog .ms-Dialog-actions .ms-Button span { font-family: "Segoe UI"; font-size: 14px; font-weight: bold; line-height: 2.14; color: #ffffff; text-transform: uppercase; }
+.add-issue-dialog .row div { margin: 6px 0 6px 0; font-family: "Segoe UI"; font-size: 12px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: 1.33; letter-spacing: normal; text-align: left; color: #010101; }
+.font-bold { font-weight: bold; }
+.note { margin-top: 20px !important; display: inline-block; }
+.save-container { text-align: center; margin-top: 12px; }
+.owner-row { width: 100%; margin: 0; padding: 0; float: left; }

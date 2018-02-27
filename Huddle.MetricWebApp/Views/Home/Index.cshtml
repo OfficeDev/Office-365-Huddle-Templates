@@ -1,0 +1,32 @@
+﻿@*
+    *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+    *   * See LICENSE in the project root for license information.
+*@
+
+@using System.Diagnostics;
+@{
+    ViewBag.Title = "Index";
+}
+
+<app-root>Loading…</app-root>
+
+@section scripts{
+    @if (Debugger.IsAttached)
+    {
+        <script src="/node_modules/core-js/client/shim.min.js"></script>
+        <script src="/node_modules/zone.js/dist/zone.js"></script>
+        <script src="/node_modules/systemjs/dist/system.src.js"></script>
+        <script src="/systemjs.config.js"></script>
+        <script>
+            System.import('app').catch(function (err) { console.error(err); });
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript" src="dist/inline.bundle.js"></script>
+        <script type="text/javascript" src="dist/polyfills.bundle.js"></script>
+        <script type="text/javascript" src="dist/styles.bundle.js"></script>
+        <script type="text/javascript" src="dist/vendor.bundle.js"></script>
+        <script type="text/javascript" src="dist/main.bundle.js"></script>
+    }
+}

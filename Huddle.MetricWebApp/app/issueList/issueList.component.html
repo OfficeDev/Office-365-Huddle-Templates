@@ -1,0 +1,67 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<header (filterIssueState)="afterFilterIssue($event)" (selectQuery)="afterQuerySelected($event)"></header>
+<div class="issue-list-section">
+    <div class="issue-header">
+        <ul class="ul-issue">
+            <li class="icon-click hidden"></li>
+            <li>
+                <div class="issue-title">
+                    <label class="gray-header">issue</label>
+                    <a class="action" (click)="addIssueClick()">add issue</a>
+                </div>
+            </li>
+            <li class="gray-header">status</li>
+            <li class="gray-header">pillar</li>
+            <li class="gray-header">metrics</li>
+            <li class="gray-header">owner</li>
+        </ul>
+    </div>
+    <div class="issue-section border-box icon-action" *ngFor="let item of issueArray" [ngClass]="{'expanded': item.Expanded,'collapsed':!item.Expanded}">
+        <div class="issue-info">
+            <ul class="ul-issue">
+                <li class="icon-click" (click)="expandIssueClick(item)"></li>
+                <li>{{item.Issue.name}}</li>
+                <li>{{item.Issue.issueState===1?"Active":"Closed"}}</li>
+                <li>{{item.Issue.category.name}}</li>
+                <li>{{item.Issue.activeMetricCount}}</li>
+                <li>{{item.Issue.owner}}</li>
+                <li>
+                    <div class="btns issue-btn" [ngClass]="{'visible':item.Expanded}">
+                        <button class="edit btn-rd" (click)="editIssueClick(item)">
+                            <span class="btn-span">EDIT</span>
+                        </button>
+                        <button class="save btn-rd blue" (click)="saveIssueClick(item)">
+                            <span class="btn-span">SAVE</span>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <metric-list #metricLists [currentIssue]="item.Issue"></metric-list>
+    </div>
+</div>
+<modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
+       (onOpen)="opened()" [cssClass]="cssClass" #modalAddIssue>
+    <modal-header>
+        <h4 class="modal-title">ADD NEW ISSUE</h4>
+    </modal-header>
+    <modal-body>
+        <add-issue (onClosed)="afterCloseNewIssue($event)"></add-issue>
+    </modal-body>
+</modal>
+<modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
+       (onOpen)="editIssueOpened()" [cssClass]="cssClass" #modalEditIssue>
+    <modal-header>
+        <h4 class="modal-title">EDIT ISSUE</h4>
+    </modal-header>
+    <modal-body>
+        <edit-issue (onClosed)="afterCloseEditIssue($event)" (onDeleted)="afterDeleteIssue($event)"></edit-issue>
+    </modal-body>
+</modal>
+<metric-list></metric-list>
+<common-confirm-popup (onCancled)="afterSaveChangesCancel($event)" (onConfirmed)="afterSaveChangesConfirm($event)" [message]="'Are you sure you want to save your changes?'" [title]="'Confirm Save'"></common-confirm-popup>
+<common-confirm-popup #expandConfirm (onCancled)="afterSaveChangesCancelExpand($event)" (onConfirmed)="afterSaveChangesExpandConfirm($event)" [message]="'Are you sure you want to save your changes?'" [title]="'Confirm Save'"></common-confirm-popup>
+<common-confirm-popup #filterConfirm (onCancled)="afterSaveChangesCancelFilter($event)" (onConfirmed)="afterSaveChangesFilterConfirm($event)" [message]="'Are you sure you want to save your changes?'" [title]="'Confirm Save'"></common-confirm-popup>
+<common-confirm-popup #queryConfirm (onCancled)="afterSaveChangesCancelQuery($event)" (onConfirmed)="afterSaveChangesConfirmQuery($event)" [message]="'Are you sure you want to save your changes?'" [title]="'Confirm Save'"></common-confirm-popup>

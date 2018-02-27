@@ -1,0 +1,29 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.issue-list-section { padding-top: 20px; }
+.issue-list-section .issue-section { margin-bottom: 5px; background-color: #fff; }
+.issue-list-section .issue-section.expanded { margin-bottom: 10px; }
+.issue-list-section ul { list-style: none; }
+.issue-list-section ul.ul-issue { margin-bottom: 0; position: relative; }
+.issue-list-section ul li { display: inline-block; }
+.issue-list-section ul li.icon-click { width: 17px; position: absolute; height: 17px; left: 10px; top: 16px; cursor: pointer; }
+.issue-list-section ul.ul-issue li:nth-child(2) { width: 29%; }
+.issue-list-section ul.ul-issue li:nth-child(3) { width: 8%; }
+.issue-list-section ul.ul-issue li:nth-child(4) { width: 11%; }
+.issue-list-section ul.ul-issue li:nth-child(5) { width: 12%; }
+.issue-list-section ul.ul-issue li:nth-child(6) { width: 14%; }
+.issue-list-section ul.ul-issue li:nth-child(7) { width: 23%; }
+.issue-list-section .issue-header ul li { }
+.issue-list-section .issue-section .issue-info ul.ul-issue { padding-top: 12px; min-height: 50px; }
+.issue-list-section .issue-section .issue-info ul li { font-size: 14px; }
+.issue-list-section .issue-section .issue-info ul li .btns { text-align: right; }
+
+.issue-btn { visibility: hidden; }
+.issue-btn.visible { visibility: visible; }
+.btns .btn-rd { width: 53px; height: 23px; border-radius: 5px; background-color: transparent; border: solid 1px #00539d; background-image: url(/images/icons-8-edit-32-px@3x.png); background-repeat: no-repeat; background-size: 13px 13px; background-position: 5px 5px; text-align: right; padding-right: 5px; }
+.btns .btn-rd span { font-size: 10px; letter-spacing: normal; text-align: left; transform: scale(0.833); color: #00539d; vertical-align: top; font-stretch: normal; letter-spacing: normal; top: 2px; position: relative; }
+.btns .btn-rd.blue { width: 74px; background-color: #00539d; background-image: url(/images/icons-8-save-32-px@3x.png); background-repeat: no-repeat; background-size: 11px 11px; background-position: 15px; padding-right: 13px; margin-left: 7px; }
+.btns .btn-rd.blue span { color: #fff; }

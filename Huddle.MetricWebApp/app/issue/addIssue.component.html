@@ -1,0 +1,51 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<form #issueForm="ngForm" name="issueForm" novalidate>
+    <div class="huddle-popup-container">
+        <div class="add-issue-dialog">
+            <div class="ms-Dialog ms-Dialog--blocking ms-Dialog--close" [ngClass]="{'is-open': isShown}">
+                <div class="row">
+                    <div class="col-md-2 item-title">
+                        Issue Name<span class="required">*</span>
+                    </div>
+                    <div class="col-md-10">
+                        <input type="text" class="ms-TextField-field" [(ngModel)]="toAddIssue.name" name="name" required ngModel #name="ngModel">
+                        <show-errors [control]="name"></show-errors>
+                    </div>
+                    <div class="col-md-2 item-title">
+                        Pillar<span class="required">*</span>
+                    </div>
+                    <div class="col-md-10">
+                        <select class="ms-Dropdown-select" [(ngModel)]="selectedCategory" (ngModelChange)="selectCategory($event)" name="categoryName">
+                            <option *ngFor="let category of categories">{{category.name}}</option>
+                        </select>
+                    </div>
+                    <div class="owner-row">
+                        <div class="col-md-2 item-title">
+                            Owner
+                        </div>
+                        <div class="col-md-10">
+                            <select class="ms-Dropdown-select" [(ngModel)]="selectedUser" (ngModelChange)="selectUser($event)" name="owner">
+                                <option *ngFor="let user of users" value="{{user.mail}}">{{user.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 note">
+                        <span class="font-bold">Note:</span><span> &nbsp;Additional metrics may be added at anytime</span>
+                    </div>
+                </div>
+                <hr />
+            </div>
+            <div class="save-container">
+                <button class="btn-cancel" (click)="close()">
+                    <span class="">Cancel</span>
+                </button>
+                <button class="btn-save" (click)="saveIssue()" [disabled]="isSaving ||issueForm.invalid || issueForm.pending">
+                    <span class="">Save</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

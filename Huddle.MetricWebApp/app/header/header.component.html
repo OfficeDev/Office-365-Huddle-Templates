@@ -1,0 +1,25 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license. -->
+<!-- See LICENSE in the project root for license information -->
+
+<div class="function-section">
+    <div class="filter">
+        <div class="title font-bold">filter</div>
+        <div class="operate">
+            <select class="dropdown state" [(ngModel)]="selectedIssueState" (ngModelChange)="changeIssueFilter($event)">
+                <option *ngFor="let issueState of issueStates" [ngValue]="issueState">{{issueState.title}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="search">
+        <div class="title font-bold">search</div>
+        <div class="operate">
+            <input class="" auto-complete
+                   [(ngModel)]="selectedQueryResult"
+                   [source]="suggestedQueryResultList.bind(this)"
+                   [list-formatter]="suggestFormatter"
+                   (valueChanged)="selectQueryItem($event)"
+                   [value-formatter]="suggestFormatter" />
+        </div>
+    </div>
+    <week-selector (selectWeek)="weekChange($event)" [allowClick]="allowWeekClick" (afterCheckAllowClick)="checkAllowWeekClick($event)"></week-selector>
+</div>

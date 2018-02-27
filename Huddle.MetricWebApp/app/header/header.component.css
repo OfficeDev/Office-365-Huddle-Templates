@@ -1,0 +1,18 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.function-section select { width: 112px; height: 25px; border-radius: 5px; background-color: #ffffff; border: solid 1px #888888; text-transform: capitalize; padding-left: 5px; font-size: 14px; -webkit-appearance: none; -moz-appearance: none; text-indent: 1px; text-overflow: ''; background-image: url(/images/icons-8-dropdown-expand-arrow-64-px.png); background-repeat: no-repeat; background-position: 91px 9px; }
+.function-section select::-ms-expand { display: none; }
+.function-section select option { text-transform: capitalize; }
+
+.function-section > * { display: inline-block; }
+.function-section > *:last-child { width: 54%; }
+.function-section > div > * { display: inline-block; }
+.function-section > div > div.title { text-transform: uppercase; font-size: 14px; margin-right: 4px; }
+.function-section .filter { width: 20%; }
+.function-section .filter input { max-width: 111px; border-radius: 5px; background-color: #ffffff; border: solid 1px #888888; }
+.function-section .search { width: 25%; }
+.function-section .search input { width: 174px; height: 25px; border-radius: 5px; background-color: #ffffff; border: solid 1px #888888; background-image: url(/images/icons-8-search-64-px.png); background-repeat: no-repeat; background-position: 150px 5px; }
+.function-section .search .ngui-auto-complete .no-match-found { display: none; }

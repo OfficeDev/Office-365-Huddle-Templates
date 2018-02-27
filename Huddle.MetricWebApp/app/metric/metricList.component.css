@@ -1,0 +1,30 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.metric-list-section { padding-left: 37px; padding-right: 9px; }
+.metric-list-section.hidden { display: none; }
+
+.metric-list-section .metric-section { margin-bottom: 5px; border-color: #00539d; background-color: #f9f9f9; }
+.metric-list-section .metric-section.expanded { margin-bottom: 10px; }
+.metric-list-section .metric-section.collapsed { border-radius: 3px; border: 1px solid #BABABA; background-color: white; }
+.metric-list-section ul { list-style: none; }
+.metric-list-section ul.ul-metric { margin-bottom: 0; position: relative; }
+.metric-list-section ul li { display: inline-block; }
+.metric-list-section ul li.icon-click { width: 17px; position: absolute; height: 17px; left: 10px; top: 16px; cursor: pointer; }
+.metric-list-section ul.ul-metric li { vertical-align: text-bottom; }
+.metric-list-section ul.ul-metric li:nth-child(2) { width: 258px; }
+.metric-list-section ul.ul-metric li:nth-child(3) { width: 71px; }
+.metric-list-section ul.ul-metric li:nth-child(4) { width: 93px; }
+.metric-list-section ul.ul-metric li:nth-child(5) { width: 302px; vertical-align: middle; }
+.metric-list-section ul.ul-metric li:nth-child(6) { width: 137px; text-align: right; vertical-align: middle; }
+.metric-list-section ul.ul-metric li:nth-child(6).gray-header { padding-right: 45px; }
+.metric-list-section ul.ul-metric li:nth-child(6) .metric-btn { padding-right: 1px; }
+
+.metric-list-section .metric-info ul.ul-metric { min-height: 50px; padding-top: 8px; width: 930px; }
+.metric-list-section .metric-info ul.ul-metric li a.action { background-image: url(/images/icons-8-edit-32-px@3x.png); vertical-align: super; }
+
+.metric-list-section ul.ul-week-day { padding-left: 0; }
+.metric-list-section ul.ul-week-day li.li-week-day { width: 13.5%; text-align: left; vertical-align: super; }
+.metric-list-section .on-off-label { font-family: "Segoe UI"; font-size: 10px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.6; letter-spacing: normal; text-align: center; color: #000000; height: 40px; display: inline; top: -5px; position: relative; margin-right: 10px; }

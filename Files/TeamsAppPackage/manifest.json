@@ -1,0 +1,43 @@
+{
+  "$schema": "https://statics.teams.microsoft.com/sdk/v1.0/manifest/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.0",
+  "version": "1.0.0",
+  "id": "<MicrosoftAppId>",
+  "packageName": "com.canviz.huddle",
+  "developer": {
+    "name": "CANVIZ Consulting",
+    "websiteUrl": "https://www.canviz.com/",
+    "privacyUrl": "https://<MetricWebAppDomain>/tab/privacy",
+    "termsOfUseUrl": "https://<MetricWebAppDomain>/tab/termsofuse"
+  },
+  "name": {
+    "short": "Huddle App",
+    "full": "Huddle App for Microsoft Teams"
+  },
+  "description": {
+    "short": "This is a full sample manifest",
+    "full": "This is an example of a fully populated Teams app manifest, using some data from the Teams sample app on Github."
+  },
+  "icons": {
+    "outline": "huddle20x20.png",
+    "color": "huddle96x96.png"
+  },
+  "accentColor": "#EBEBEB",
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://<MetricWebAppDomain>/tab/configure",
+      "canUpdateConfiguration": true,
+      "scopes": [
+        "team"
+      ]
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": [
+    "<MetricWebAppDomain>",
+    "*.<MetricWebAppDomain>"
+  ]
+}

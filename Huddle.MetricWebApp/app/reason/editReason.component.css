@@ -1,0 +1,9 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.new-reason-container .row div { margin: 6px 0 6px 0; font-family: "Segoe UI"; font-size: 12px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: 1.33; letter-spacing: normal; text-align: left; color: #010101; }
+.new-reason-container radio { margin: 0 6px; }
+.save-container { text-align: center; margin-top: 12px; }
+.on-off-label { position: absolute; top: 4px; margin-left: 6px; }

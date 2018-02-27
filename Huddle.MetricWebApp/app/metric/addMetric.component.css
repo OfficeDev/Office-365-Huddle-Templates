@@ -1,0 +1,37 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+.object-dialog .required { color: #ff0000; padding-left: 5px; }
+.object-dialog .ms-Dialog-content { display: table; }
+.object-dialog .ms-Dialog-content .content-block { display: table-row; }
+.object-dialog .ms-Dialog-content .content-block > * { display: table-cell; }
+.object-dialog .ms-TextField > *, .object-dialog .dropdown-container > * { display: inline-block; vertical-align: middle; }
+.object-dialog .ms-Dialog { padding: 0; font-family: "Segoe UI"; max-width: none; }
+.object-dialog .ms-Dialog-title { background-color: #ebebeb; margin-right: 0; line-height: 30px; }
+.object-dialog .ms-Dialog-title, .object-dialog .ms-Dialog-content { padding: 0 30px; }
+.object-dialog .ms-Dialog-title, .object-dialog .ms-Dialog-content .left { color: #464646; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+.object-dialog .ms-Dialog-content :not(.content-block:nth-child(2)) .left { padding-right: 20px; width: 87px; }
+.object-dialog .ms-Dialog-content .right { width: 550px; }
+.object-dialog .ms-Dialog-content .right :not(.required) { color: #010101; font-size: 12px; }
+.object-dialog .ms-Dialog-content .right > :not(.divider) { margin-bottom: 13px; }
+.object-dialog .ms-TextField .ms-Label, .object-dialog .dropdown-container .ms-Label { font-weight: normal; padding-right: 8px; width: 58px; }
+.object-dialog .content-block:last-child .ms-TextField .ms-Label { text-align: right; }
+.object-dialog .ms-TextField .ms-Label, .object-dialog .dropdown-container .ms-Label { font-weight: normal; padding-right: 8px; width: 58px; }
+.object-dialog .ms-TextField .ms-TextField-field, .object-dialog .dropdown-container .ms-Dropdown { width: 423px; max-width: none; }
+.object-dialog .dropdown-container .ms-Dropdown { margin-bottom: 0; }
+.object-dialog .ms-TextField .ms-TextField-field, .object-dialog .dropdown-container .ms-Dropdown .ms-Dropdown-title { border-radius: 5px; border-color: #a1a1a1; }
+.object-dialog .ms-Dialog.is-open + .ms-Overlay { display: block; z-index: 9; }
+.object-dialog .ms-Dialog-buttonClose { position: absolute; top: -41px; left: 676px; z-index: 2; cursor: pointer; width: 30px; }
+.object-dialog .ms-Dialog-buttonClose:disabled { cursor: default; }
+.object-dialog .ms-Dialog-buttonClose .ms-Icon.ms-Icon--Cancel { font-size: 22px; line-height: 22px; color: #ffffff; }
+.object-dialog .divider { height: 1px; background-color: #ebebeb; margin-top: 16px; margin-bottom: 13px; }
+.object-dialog .ms-Dialog .ms-Dialog-actions { text-align: center; }
+.object-dialog .ms-Dialog .ms-Dialog-actions .ms-Button { width: 108px; height: 34px; border-radius: 5px; background-color: #018fbf; padding-top: 1px; margin-top: 5px; margin-bottom: 30px; }
+.object-dialog .ms-Dialog .ms-Dialog-actions .ms-Button span { font-family: "Segoe UI"; font-size: 14px; font-weight: bold; line-height: 2.14; color: #ffffff; text-transform: uppercase; }
+.object-dialog .row div { margin: 6px 0 6px 0; font-family: "Segoe UI"; font-size: 12px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: 1.33; letter-spacing: normal; text-align: left; color: #010101; }
+.font-bold { font-weight: bold; }
+.note { margin-top: 20px !important; display: inline-block; }
+.save-container { text-align: center; margin-top: 12px; }
+.line { float: left; }

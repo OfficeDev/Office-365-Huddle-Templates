@@ -1,0 +1,72 @@
+﻿/*   
+ *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
+ *   * See LICENSE in the project root for license information.  
+ */
+
+body { padding-top: 0px; padding-bottom: 20px; color: #000 !important; font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif; }
+a { font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif; }
+
+/* Set padding to keep content from hitting the edges */
+.body-content { padding-left: 0px; padding-right: 0px; margin: 0px auto; }
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt { white-space: normal; }
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea { max-width: 280px; }
+
+.ms-Overlay { background-color: rgba(0,0,0,0.6); }
+
+.huddle-container { max-width: 1024px; margin: 0px auto; background-color: #F9F9F9; padding: 20px 21px; }
+.huddle-container input { border-radius: 5px; border: 1px solid #8F8F8F; height: 25px; }
+.huddle-container a.action { font-size: 10px; font-weight: 600; font-style: "Segoe UI"; font-stretch: normal; letter-spacing: normal; text-align: left; color: #00539d; text-transform: uppercase; transform: scale(0.833); /*10/12=0.833, font-size:10px*/ background-image: url('/images/plus-sign-copy.png'); background-repeat: no-repeat; background-size: 10px 10px; background-position: 0px; padding-left: 16px; text-decoration: none; cursor: pointer; }
+.huddle-container .icon-action { background-repeat: no-repeat; background-position: 10px; }
+.huddle-container .icon-action.collapsed { background-image: url(/images/icons-8-plus-math-32-px.png) }
+.huddle-container .icon-action.expanded { background-image: url(/images/icons-8-subtract-32-px.png); background-position-y: 24px; }
+
+.huddle-container .border-box { border-radius: 3px; border: 1px solid #BABABA; }
+.huddle-container .font-bold { font-weight: 600; }
+.huddle-container .gray-header { font-size: 12px; color: #7C7C7C; text-transform: uppercase; font-weight: 600; }
+.function-section .border-box { border-radius: 5px; border: 1px solid #BABABA; }
+.modal-dialog { width: 700px !important; }
+.modal-header { padding: 4px 0 6px 30px; height: 30px; background-color: #00539d; font-family: "Segoe UI"; font-size: 14px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 2.14; letter-spacing: normal; text-align: left; color: #ffffff; }
+.modal-header h4 { font-size: 14px; font-family: "Segoe UI"; }
+.modal-footer { text-align: center; }
+
+.huddle-popup-container { padding: 12px 20px; }
+
+.huddle-container input, .huddle-container select { font-family: "Segoe UI"; }
+
+.huddle-popup-container input[type="text"] { border-radius: 5px; border: solid 1px #a1a1a1; width: 300px; height: 27px; padding-left: 6px; }
+.huddle-popup-container select { width: 300px; height: 27px; }
+.huddle-popup-container input[type="radio"] { width: 10px; height: 10px; border: solid 1px #4a4a4a; margin: 0 12px; }
+.huddle-popup-container button { margin: 0 6px; }
+.modal-footer .btn-default, .huddle-popup-container .btn-cancel { width: 108px; height: 34px; border-radius: 5px; background-color: white; border: solid 1px #00539d; color: #00539d; text-align: center; font-family: "Segoe UI"; font-size: 14px; font-weight: 600; font-style: normal; }
+.modal-footer .btn-primary, .huddle-popup-container .btn-save { width: 108px; height: 34px; border-radius: 5px; background-color: #00539d; border: solid 1px #00539d; color: #ffffff; text-align: center; font-family: "Segoe UI"; font-size: 14px; font-weight: 600; font-style: normal; }
+.huddle-popup-container .required { color: #ff0000; padding-left: 5px; }
+.huddle-container .save-container { margin-top: 20px; display: inline-block; text-align: center; min-height: 30px; }
+.huddle-popup-container button[disabled] { background: rgb(185, 185, 185) !important; color: white !important; }
+
+.huddle-popup-container .error-ul { margin: 10px 0 0 0; padding: 0 0 0 16px; }
+.huddle-popup-container .save-container { height: 50px; text-align: center; }
+.huddle-popup-container .save-container .left { width: 50%; text-align: left; float: left; }
+.huddle-popup-container .save-container .right { width: 50%; text-align: right; float: left; }
+.huddle-popup-container .item-title { padding: 5px 0 0 15px; }
+.deleteDialog .modal-content { height: 400px; }
+
+.deleteDialog .message { margin: 12px 0 230px 0; font-weight: bold; font-size: 24px }
+.deleteDialog .modal-content { height: 435px; }
+.deleteDialog .huddle-popup-container { height: 300px; }
+.deleteDialog .save-container { text-align: center; }
+
+@media (min-width: 992px) {
+    .container { min-width: 1024px; max-width: 1024px; }
+}
+
+@media (min-width: 768px) {
+    .container { min-width: 1024px; max-width: 1024px; }
+}

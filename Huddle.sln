@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.BotWebApp", "Huddle.BotWebApp\Huddle.BotWebApp.csproj", "{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.MetricWebApp", "Huddle.MetricWebApp\Huddle.MetricWebApp.csproj", "{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{78819653-F89B-4130-93C2-03124AD6707F}"
+	ProjectSection(SolutionItems) = preProject
+		Files\HuddleBotIcon.png = Files\HuddleBotIcon.png
+		Files\LUISApp.json = Files\LUISApp.json
+		Files\PnPProvisioningTemplate.xml = Files\PnPProvisioningTemplate.xml
+		Files\Teams.xlsx = Files\Teams.xlsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TeamsAppPackage", "TeamsAppPackage", "{8D54B5AF-2182-4E40-9657-CAB1B208C75F}"
+	ProjectSection(SolutionItems) = preProject
+		Files\TeamsAppPackage\huddle20x20.png = Files\TeamsAppPackage\huddle20x20.png
+		Files\TeamsAppPackage\huddle96x96.png = Files\TeamsAppPackage\huddle96x96.png
+		Files\TeamsAppPackage\manifest.json = Files\TeamsAppPackage\manifest.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.WebJob", "Huddle.WebJob\Huddle.WebJob.csproj", "{E11C1A06-DF8E-4A98-99C8-956A4952DB7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.Common", "Huddle.Common\Huddle.Common.csproj", "{736A9F8D-28A0-4BA6-BC37-709B6C289910}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E11C1A06-DF8E-4A98-99C8-956A4952DB7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E11C1A06-DF8E-4A98-99C8-956A4952DB7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E11C1A06-DF8E-4A98-99C8-956A4952DB7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E11C1A06-DF8E-4A98-99C8-956A4952DB7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{736A9F8D-28A0-4BA6-BC37-709B6C289910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{736A9F8D-28A0-4BA6-BC37-709B6C289910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{736A9F8D-28A0-4BA6-BC37-709B6C289910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{736A9F8D-28A0-4BA6-BC37-709B6C289910}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8D54B5AF-2182-4E40-9657-CAB1B208C75F} = {78819653-F89B-4130-93C2-03124AD6707F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7CBBB511-499D-4A15-92D1-CCD534B213B9}
+	EndGlobalSection
+EndGlobal
