@@ -77,6 +77,8 @@ An Azure Subscription is required to deploy the Azure components. We will use th
 
 Please download files in `/Files` folder to your computer.
 
+To learn more about the huddle solutions in Microsoft Teams and Microsoft O365, visit the [Microsoftdeveloper blog](https://dev.office.com/blogs/new-templates-to-create-huddle-solutions-in-microsoft-teams-and-office-365).
+
 ## Enable and Create Microsoft Teams
 
 ### Enable Microsoft Teams feature
