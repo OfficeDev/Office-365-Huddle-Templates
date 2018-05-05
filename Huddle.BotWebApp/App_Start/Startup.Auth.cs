@@ -34,7 +34,7 @@ namespace Huddle.BotWebApp
                         RedirectToIdentityProvider = (context) =>
                         {
                             // This ensures that the address used for sign in and sign out is picked up dynamically from the request
-                            // this allows you to deploy your app (to Azure Web Sites, for example)without having to change settings
+                            // this allows you to deploy your app (to Azure Web Sites, for example) without having to change settings
                             // Remember that the base URL of the address used here must be provisioned in Azure AD beforehand.
                             string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
                             context.ProtocolMessage.RedirectUri = appBaseUrl + "/";
@@ -50,7 +50,6 @@ namespace Huddle.BotWebApp
 
                             return Task.FromResult(0);
                         },
-
 
                         // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
                         AuthorizationCodeReceived = async context =>

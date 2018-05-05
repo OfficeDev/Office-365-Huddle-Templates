@@ -92,7 +92,7 @@ namespace Huddle.BotWebApp.Dialogs
         {
             var team = context.UserData.GetValueOrDefault<Team>(Constants.UserDataKey.TeamId);
             if (team != null)
-                await context.SayAsync($"You current team is **{team.DisplayName}**");
+                await context.SayAsync($"Your current team is **{team.DisplayName}**");
             await context.Forward(new SelectTeamDialog(), TeamSelected, context.Activity, CancellationToken.None);
         }
 

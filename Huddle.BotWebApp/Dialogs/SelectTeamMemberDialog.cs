@@ -58,7 +58,7 @@ namespace Huddle.BotWebApp.Dialogs
 
             if (member == null)
             {
-                var text = $"Sorry, could not find user '{displayName}' in {team.DisplayName}. Please identify the idea owner.";
+                var text = $"Sorry, I could not find user '{displayName}' in {team.DisplayName}. Please identify the idea owner.";
                 await context.ChoiceAsync(text, members.Select(i => i.DisplayName).ToArray());
                 context.Wait(TeamMemberSelected);
             }

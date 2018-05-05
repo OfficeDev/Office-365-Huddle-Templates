@@ -48,7 +48,7 @@
         {
           "canonicalForm": "Shareable",
           "list": [
-            "Sharable"
+            "Shareable"
           ]
         }
       ]
@@ -97,7 +97,7 @@
       "entities": []
     },
     {
-      "text": "Email cloney John",
+      "text": "Email someone",
       "intent": "None",
       "entities": []
     },
@@ -107,7 +107,7 @@
       "entities": []
     },
     {
-      "text": "email cloney John",
+      "text": "email someone",
       "intent": "None",
       "entities": []
     },
@@ -142,17 +142,17 @@
       "entities": []
     },
     {
-      "text": "list new idea",
+      "text": "list new ideas",
       "intent": "Idea.List",
       "entities": []
     },
     {
-      "text": "show me idea in progress",
+      "text": "show me ideas in progress",
       "intent": "Idea.List",
       "entities": []
     },
     {
-      "text": "show me new idea",
+      "text": "show me new ideas",
       "intent": "Idea.List",
       "entities": []
     },
@@ -162,7 +162,7 @@
       "entities": []
     },
     {
-      "text": "list idea in progress",
+      "text": "list ideas in progress",
       "intent": "Idea.List",
       "entities": []
     },

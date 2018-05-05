@@ -18,8 +18,6 @@ namespace Huddle.BotWebApp
     {
         public static async Task<TeamsChannelAccount> GetTeamsAccountAsync(this IActivity activity)
         {
-            // The result returned by the following code is lack of information
-            // return activity.From.AsTeamsChannelAccount();
             var connector = new ConnectorClient(new Uri(activity.ServiceUrl));
             var members = await connector.Conversations.GetConversationMembersAsync(activity.Conversation.Id);
             var member = members
