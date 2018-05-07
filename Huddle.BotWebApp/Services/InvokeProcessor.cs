@@ -64,7 +64,7 @@ namespace Huddle.BotWebApp.Services
             var ideaService = new IdeaService(graphServiceClient);
 
             var plan = await planService.GetTeamPlanAsync(model.Team);
-            if (plan == null) throw new ApplicationException($"Could not found plan named '{model.Team.DisplayName}'");
+            if (plan == null) throw new ApplicationException($"Could not find plan named '{model.Team.DisplayName}'");
 
             var description = $"Next Steps\r\n{model.NextSteps}\r\n\r\nAligned to Metric\r\n{model.Metric.Name}";
             var startDate = new DateTimeOffset(model.StartDate, TimeSpan.FromHours(12));

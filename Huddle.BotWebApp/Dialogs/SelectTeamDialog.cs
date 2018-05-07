@@ -36,7 +36,7 @@ namespace Huddle.BotWebApp.Dialogs
             teams = await graphServiceClient.GetJoinedTeamsAsync();
             if (teams.Length == 0)
             {
-                context.Fail(new Exception("Sorry. You do not belong to any team."));
+                context.Fail(new Exception("Sorry, you do not belong to any team at the moment."));
             }
             else if (teams.Length == 1)
             {
@@ -61,7 +61,7 @@ namespace Huddle.BotWebApp.Dialogs
                 .FirstOrDefault();
             if (team == null)
             {
-                await context.ChoiceAsync($"Could not found team '{teamDisplayName}'. Please select one of you teams", teams.Select(i => i.DisplayName));
+                await context.ChoiceAsync($"Could not find team '{teamDisplayName}'. Please select one of you teams", teams.Select(i => i.DisplayName));
                 context.Wait(TeamSelected);
             }
             else

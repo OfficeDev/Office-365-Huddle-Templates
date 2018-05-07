@@ -69,7 +69,7 @@ namespace Huddle.BotWebApp.Dialogs
             var ideas = await ideaService.GetAsync(Team, plan.Id, status, from);
 
             var summary = ideas.Length > 0
-                ? $"Getting {ideas.Length} {(ideas.Length > 1 ? "ideas" : "idea")} from Microsoft Planner, Please wait..."
+                ? $"Getting {ideas.Length} {(ideas.Length > 1 ? "ideas" : "idea")} from Microsoft Planner, please wait..."
                 : "No idea was found.";
             await context.SayAsync(summary);
 

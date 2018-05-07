@@ -1,4 +1,8 @@
 # Huddle
+Improving quality of care depends on many things – process, patient care, and research planning. Huddle developer templates built on the Microsoft Teams platform, help drive quality and care outcomes by enabling collaboration with more effective huddle teams. With the huddle sample solutions, you can: 
+* Measure and visualize impactful best practices across your organization. 
+* Identify patient care issues and potential causes. 
+* Share ideas with your health team using natural conversations. 
 
 **Table of content**
 

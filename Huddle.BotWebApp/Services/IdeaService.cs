@@ -54,13 +54,13 @@ namespace Huddle.BotWebApp.Services
 
         public async Task<PlannerTask> CreateAsync(string planId, string title, DateTimeOffset? startDate, string ownerId, string description)
         {
-            var newIdearBucket = await plannerService.GetNewIdeaBucketAsync(planId);
-            if (newIdearBucket == null) throw new ApplicationException("Could not found New Idea bucket.");
+            var newIdeaBucket = await plannerService.GetNewIdeaBucketAsync(planId);
+            if (newIdeaBucket == null) throw new ApplicationException("Could not find New Idea bucket.");
 
             var plannerTask = new PlannerTask
             {
                 PlanId = planId,
-                BucketId = newIdearBucket.Id,
+                BucketId = newIdeaBucket.Id,
                 Title = title,
                 StartDateTime = startDate,
                 Assignments = new PlannerAssignments()

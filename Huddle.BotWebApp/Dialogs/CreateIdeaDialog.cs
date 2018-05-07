@@ -57,7 +57,7 @@ namespace Huddle.BotWebApp.Dialogs
             nextSteps = activity.GetTrimmedText();
             if (nextSteps.IsNullOrEmpty())
             {
-                await context.SayAsync("Next steps is required. Please input again.");
+                await context.SayAsync("Please input one or more steps.");
                 context.Wait(SetNextStepsAsync);
             }
             else
@@ -185,7 +185,7 @@ namespace Huddle.BotWebApp.Dialogs
             var ideaService = new IdeaService(await result);
 
             var plan = await planService.GetTeamPlanAsync(Team);
-            if (plan == null) throw new ApplicationException($"Could not found plan named '{Team.DisplayName}'");
+            if (plan == null) throw new ApplicationException($"Could not find plan named '{Team.DisplayName}'");
 
             var plannerTask = await ideaService.CreateAsync(plan.Id, idea.Title, idea.StartDate, idea.Owners.Select(i => i.Id).FirstOrDefault(), idea.Description);
             var plannerTaskUrl = ideaService.GetIdeaUrl(Team.Id, plan.Id, plannerTask.Id);

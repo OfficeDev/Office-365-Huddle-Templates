@@ -97,7 +97,7 @@
       "entities": []
     },
     {
-      "text": "Email cloney John",
+      "text": "Email someone",
       "intent": "None",
       "entities": []
     },
@@ -107,7 +107,7 @@
       "entities": []
     },
     {
-      "text": "email cloney John",
+      "text": "email someone",
       "intent": "None",
       "entities": []
     },
