@@ -250,13 +250,24 @@ namespace Huddle.MetricWebApp.SharePoint
                 for (int i = items.Count - 1; i > -1; i--)
                 {
                     var taskId = items[i].GetFieldValueStr(SPLists.MetricIdeas.Columns.TaskId);
-                    var task = await graphServiceClient.Planner.Tasks[taskId]
-                    .Request().GetAsync();
-                    await graphServiceClient.Planner.Tasks[taskId]
-                     .Request(new[] { new Microsoft.Graph.HeaderOption("If-Match", task.GetEtag()) })
-                     .DeleteAsync();
-                    items[i].DeleteObject();
-                    clientContext.ExecuteQuery();
+
+                    PlannerTask task = null;
+                    try
+                    {
+                        task = await graphServiceClient.Planner.Tasks[taskId].Request().GetAsync();
+                    }
+                    catch (ServiceException)
+                    {
+                    }
+
+                    if (task != null)
+                    {
+                        await graphServiceClient.Planner.Tasks[taskId]
+                         .Request(new[] { new HeaderOption("If-Match", task.GetEtag()) })
+                         .DeleteAsync();
+                        items[i].DeleteObject();
+                        clientContext.ExecuteQuery();
+                    }
                 }
             }
         }
