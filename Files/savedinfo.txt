@@ -1,0 +1,10 @@
+LUIS App Id: c6091cb5-c50b-4a30-8d8d-96351a40203f
+sharepoint site: https://jebosoft.sharepoint.com/sites/huddle
+Certificate Pfx Password: Password01!
+Tenant Id of ARM Template: 0f6cf628-db59-4fe3-9f36-ca3b98d06213
+Huddle Bot Web App Id: f868bf50-d8b4-4bbe-bf87-1a4184c33fe5
+Huddle Bot Web App Key: IE5Vv0Fvv7Giz2OmSNKTIo3rF78/aC8UEgR7Di685bc=
+Huddle Metric Web App Id: 4a8143c2-5420-4655-9690-0427333d22e9
+Huddle Metric Web App Key: XRE1pck9gfD38fB14pIpc+IPpkERCIgZPBje9ThMz+I=
+Huddle MS Graph Connector App Id: d3e1480c-e7e8-4518-9126-e69fc805026b
+Huddle MS Graph Connector Web App Key: 5fv9QSaoiQ6+8pNWLWP68wkN7WgCPITD0wWlG1Ob2JE=

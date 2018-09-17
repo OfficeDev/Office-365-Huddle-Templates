@@ -8,6 +8,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
 
 namespace Huddle.BotWebApp.Controllers
 {
@@ -15,6 +16,8 @@ namespace Huddle.BotWebApp.Controllers
     {
         public void SignIn(string redirectUri = "/")
         {
+            //if (HttpContext.Request.Url.ToString().ToLower().Contains("localhost"))
+            //    redirectUri = ConfigurationManager.AppSettings["LocalHostNGrokURI"] + redirectUri;
             // Send an OpenID Connect sign-in request.
             HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = redirectUri },
                 OpenIdConnectAuthenticationDefaults.AuthenticationType);
@@ -27,7 +30,11 @@ namespace Huddle.BotWebApp.Controllers
 
         public void SignOut()
         {
-            string callbackUrl = Url.Action("SignOutCallback", "Account", routeValues: null, protocol: Request.Url.Scheme);
+            string callbackUrl;
+            //if (HttpContext.Request.Url.ToString().ToLower().Contains("localhost"))
+            //    callbackUrl = ConfigurationManager.AppSettings["LocalHostNGrokURI"] + "/Account/SignOutCallback";
+            //else
+            callbackUrl = Url.Action("SignOutCallback", "Account", routeValues: null, protocol: Request.Url.Scheme);
             HttpContext.GetOwinContext().Authentication.SignOut(
                 new AuthenticationProperties { RedirectUri = callbackUrl },
                 OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);

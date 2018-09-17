@@ -27,7 +27,9 @@ namespace Huddle.BotWebApp.Controllers
         public MessagesController()
         {
             this.connectorClient = new ConnectorClient(
-                new Uri("https://smba.trafficmanager.net/amer-client-ss.msg/"),
+                new Uri("https://smba.trafficmanager.net/amer"),
+                //new Uri("https://smba.trafficmanager.net/amer-client-ss.msg/v3/conversations"),
+                //new Uri("https://b9a27b7f.ngrok.io"),
                 ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppIdKey],
                 ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppPasswordKey]);
             this.connectorClient.SetRetryPolicy(
@@ -42,15 +44,24 @@ namespace Huddle.BotWebApp.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            var account = await activity.GetTeamsAccountAsync();
-            SignInDialog.DefaultSignInUrl = GetSignInUri(account.UserPrincipalName).ToString();
+            try
+            {
+                var account = await activity.GetTeamsAccountAsync();
+                SignInDialog.DefaultSignInUrl = GetSignInUri(account.UserPrincipalName).ToString();
 
-            if (activity?.Type == ActivityTypes.Message)
-                await Conversation.SendAsync(activity, () => new RootDialog());
-            else if (activity?.Type == ActivityTypes.Invoke)
-                await invokeProcessor.ProcessAsync(activity);
-            else
-                HandleSystemMessage(activity);
+                if (activity?.Type == ActivityTypes.Message)
+                {
+                    await Conversation.SendAsync(activity, () => new RootDialog());
+                }
+                else if (activity?.Type == ActivityTypes.Invoke)
+                    await invokeProcessor.ProcessAsync(activity);
+                else
+                    HandleSystemMessage(activity);
+            }
+            catch (Exception ex)
+            {
+                Console.Write("Root Dialog send failed: {0} ", ex);
+            }
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
@@ -86,7 +97,11 @@ namespace Huddle.BotWebApp.Controllers
         private Uri GetSignInUri(string userPrincipalName)
         {
             var baseUri = Request.RequestUri.GetComponents(UriComponents.Scheme | UriComponents.HostAndPort, UriFormat.Unescaped);
-            return new Uri(Request.RequestUri, $"/Account/SignIn?loginHint={userPrincipalName}&redirectUri=" + HttpUtility.UrlEncode("/Account/SignInCallback"));
+            if (baseUri.ToLower().Contains("localhost"))
+                baseUri = ConfigurationManager.AppSettings["LocalHostNGrokURI"];
+
+            //return new Uri(Request.RequestUri, $"/Account/SignIn?loginHint={userPrincipalName}&redirectUri=" + HttpUtility.UrlEncode("/Account/SignInCallback"));
+            return new Uri(baseUri + $"/Account/SignIn?loginHint={userPrincipalName}&redirectUri=" + baseUri + HttpUtility.UrlEncode("/Account/SignInCallback"));
         }
     }
 }

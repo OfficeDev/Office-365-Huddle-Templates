@@ -57,7 +57,7 @@ namespace Huddle.BotWebApp.Dialogs
 
             var teamDisplayName = activity.Text.Trim();
             var team = teams
-                .Where(i => i.DisplayName == teamDisplayName)
+                .Where(i => teamDisplayName.Contains(i.DisplayName))
                 .FirstOrDefault();
             if (team == null)
             {

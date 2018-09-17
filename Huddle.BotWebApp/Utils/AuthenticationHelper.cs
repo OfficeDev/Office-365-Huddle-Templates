@@ -106,6 +106,11 @@ namespace Huddle.BotWebApp.Utils
 
         private static X509Certificate2 GetX509Certificate()
         {
+            // REMOVE before deploying to Azure!
+            //X509Certificate2 tempcert = new X509Certificate2(System.Convert.FromBase64String(Constants.AADClientCertThumbprint), "Password01!");
+            //if (tempcert != null)
+            //    return tempcert;
+
             using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
             {
                 store.Open(OpenFlags.ReadOnly);
