@@ -12,6 +12,7 @@ using Owin;
 using System;
 using System.Threading.Tasks;
 using System.Web;
+using System.Configuration;
 
 namespace Huddle.BotWebApp
 {
@@ -37,6 +38,8 @@ namespace Huddle.BotWebApp
                             // this allows you to deploy your app (to Azure Web Sites, for example) without having to change settings
                             // Remember that the base URL of the address used here must be provisioned in Azure AD beforehand.
                             string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
+                            if (appBaseUrl.ToLower().Contains("localhost"))
+                                appBaseUrl = ConfigurationManager.AppSettings["LocalHostNGrokURI"];
                             context.ProtocolMessage.RedirectUri = appBaseUrl + "/";
                             context.ProtocolMessage.PostLogoutRedirectUri = appBaseUrl;
 

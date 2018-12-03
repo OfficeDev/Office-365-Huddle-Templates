@@ -7,6 +7,8 @@ using Autofac;
 using Huddle.BotWebApp.Infrastructure;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Builder.Dialogs.Internals;
+using Microsoft.Bot.Connector;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -29,8 +31,17 @@ namespace Huddle.BotWebApp
 
         private void RegisterBotModules()
         {
+            // Use an in-memory store for bot data.
+            // This registers a IBotDataStore singleton that will be used throughout the app.
+            var store = new InMemoryDataStore();
             Conversation.UpdateContainer(builder =>
             {
+                builder.Register(c => new CachingBotDataStore(store,
+                         CachingBotDataStoreConsistencyPolicy
+                         .ETagBasedConsistency))
+                         .As<IBotDataStore<BotData>>()
+                         .AsSelf()
+                         .InstancePerLifetimeScope();
                 builder.RegisterModule(new ReflectionSurrogateModule());
                 builder.RegisterModule<GlobalMessageHandlersBotModule>();
             });
