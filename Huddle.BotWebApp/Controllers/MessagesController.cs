@@ -28,8 +28,7 @@ namespace Huddle.BotWebApp.Controllers
         {
             this.connectorClient = new ConnectorClient(
                 new Uri("https://smba.trafficmanager.net/amer"),
-                //new Uri("https://smba.trafficmanager.net/amer-client-ss.msg/v3/conversations"),
-                //new Uri("https://b9a27b7f.ngrok.io"),
+                //new Uri("https://b9a27b7f.ngrok.io"), // need for ngrok testing
                 ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppIdKey],
                 ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppPasswordKey]);
             this.connectorClient.SetRetryPolicy(

@@ -54,7 +54,6 @@ namespace Huddle.BotWebApp.Dialogs
             var displayName = activity.Text;
             var member = members
                 .Where(i => displayName.Contains(i.DisplayName))
-                //.Where(i => i.DisplayName == displayName)
                 .FirstOrDefault();
 
             if (member == null)

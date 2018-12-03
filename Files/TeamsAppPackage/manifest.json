@@ -2,13 +2,13 @@
   "$schema": "https://statics.teams.microsoft.com/sdk/v1.3.0-beta.2/manifest/MicrosoftTeams.schema.json",
   "manifestVersion": "1.3",
   "version": "1.3",
-  "id": "f868bf50-d8b4-4bbe-bf87-1a4184c33fe5",
+  "id": "<MicrosoftAppId>",
   "packageName": "com.canviz.huddle",
   "developer": {
     "name": "CANVIZ Consulting",
     "websiteUrl": "https://www.canviz.com/",
-    "privacyUrl": "https://huddle-metric-4jh4y6.azurewebsites.net/tab/privacy",
-    "termsOfUseUrl": "https://huddle-metric-4jh4y6.azurewebsites.net/tab/termsofuse"
+    "privacyUrl": "https://<MetricWebAppDomain>/tab/privacy",
+    "termsOfUseUrl": "https://<MetricWebAppDomain>/tab/termsofuse"
   },
   "name": {
     "short": "Huddle App",
@@ -25,14 +25,14 @@
   "accentColor": "#EBEBEB",
   "configurableTabs": [
     {
-      "configurationUrl": "https://huddle-metric-4jh4y6.azurewebsites.net/tab/configure",
+      "configurationUrl": "https://<MetricWebAppDomain>/tab/configure",
       "canUpdateConfiguration": true,
       "scopes": [
         "team"
       ]
     }
   ],
- "bots": [
+  "bots": [
     {
       "botId": "f1314354-55e2-49b2-be55-adbfebc62233",
       "isNotificationOnly": false,
@@ -92,8 +92,8 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "huddle-metric-4jh4y6.azurewebsites.net",
-    "*.huddle-metric-4jh4y6.azurewebsites.net", 
+    "<MetricWebAppDomain>",
+    "*.<MetricWebAppDomain>",
     "*.ngrok.io"
   ]
 }
