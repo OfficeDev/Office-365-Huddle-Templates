@@ -159,7 +159,10 @@ namespace Huddle.BotWebApp.Dialogs
             if (ex is SignTimeoutException)
                 await context.SayAsync($"Sorry I timed out - please ask me to do something again.");
             else
+            {
                 await context.SayAsync(messagePrefix + ex.Message);
+                LogErrorAttribute.LogException(ex);
+            }
         }
 
         #endregion
