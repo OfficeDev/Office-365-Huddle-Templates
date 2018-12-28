@@ -13,40 +13,57 @@
     var popUpAuthUrl = Url.Action("SignIn", "Account", new { redirectUri = popUpAuthRedirectUri }, protocol: Request.Url.Scheme);
 
     var embedAuthRedirectUri = Url.Action("SignInCallBack", new { embed = true });
-    var embedAuthUrl = Url.Action("SignIn", "Account", new { redirectUri = embedAuthRedirectUri }, protocol: Request.Url.Scheme);
-
+    var embedAuthUrl = Url.Action("SignIn", "Account", new { redirectUri = embedAuthRedirectUri, prompt = "none" }, protocol: Request.Url.Scheme);
 }
 
-<p>Signing in ...</p>
-<iframe src="@embedAuthUrl" style="display:none"></iframe>
+@* try to sign in sliently with prompt=none *@
+<iframe src="@embedAuthUrl" style="display: none"></iframe>
+
+@* if slient sign in fails, let the user sign in manually *@
+<div id="loginRequired" style="display:none">
+    <button id="btnSignIn">Sign In</button>
+</div>
 
 @section scripts{
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script type="text/javascript">
-        microsoftTeams.initialize();
-        var popupSignInWindow = function () {
-            microsoftTeams.getContext(function (context) {
-                microsoftTeams.authentication.authenticate({
-                    url: '@popUpAuthUrl' + '&loginHint=' + context.upn,
-                    width: 600,
-                    height: 480,
-                    successCallback: function () {
-                        window.location = '/?teamId=@teamId'
-                    },
-                    failureCallback: function () {
-                        window.location = '/?teamId=@teamId'
-                    }
-                });
-            });
-        };
 
-        var messageListener = function (evt) {
-            if (evt.data == "SignInSuccessfully") {
-                window.location = '/?teamId=@teamId'
+        var teamId = '@teamId';
+        function redirectToHome(){
+            window.location = '/?teamId=' + teamId;
+        }
+
+        // add event listener
+        function messageListener(evt) {
+            if (evt.data == 'LoginRequired') {
+                $('#loginRequired').show();
+            }
+            else if (evt.data == 'SignInSuccessfully') {
+                redirectToHome();
             }
         };
         window.addEventListener("message", messageListener, false);
 
-        setTimeout(popupSignInWindow, 3000)
+        // get current user's upn
+        var userUpn = '';
+        microsoftTeams.initialize();
+        microsoftTeams.getContext(function (context) {
+            userUpn = context.upn
+        })
+
+        //
+        $('#btnSignIn').on('click', function () {
+            microsoftTeams.authentication.authenticate({
+                url: '@popUpAuthUrl' + '&loginHint=' + userUpn,
+                width: 600,
+                height: 480,
+                successCallback: function () {
+                    redirectToHome();
+                },
+                failureCallback: function () {
+                    redirectToHome();
+                }
+            })
+        });
     </script>
 }

@@ -19,6 +19,11 @@ namespace Huddle.MetricWebApp.Controllers
             return View();
         }
 
+        public ActionResult SignInRequired()
+        {
+            return View();
+        }
+
         public ActionResult SignInCallBack()
         {
             return View();

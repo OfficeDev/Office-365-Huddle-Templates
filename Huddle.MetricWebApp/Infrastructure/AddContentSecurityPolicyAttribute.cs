@@ -3,6 +3,7 @@
  *   * See LICENSE in the project root for license information.  
  */
 
+using System.Diagnostics;
 using System.Web.Mvc;
 
 namespace Huddle.MetricWebApp.Infrastructure
@@ -14,6 +15,8 @@ namespace Huddle.MetricWebApp.Infrastructure
             if (!(filterContext.Result is ViewResult)) return;
 
             var host = filterContext.HttpContext.Request.Url.Host;
+            if (Debugger.IsAttached)
+                host += ":" + filterContext.HttpContext.Request.Url.Port;
 
             // https://msdn.microsoft.com/en-us/microsoft-teams/prerequisites
 

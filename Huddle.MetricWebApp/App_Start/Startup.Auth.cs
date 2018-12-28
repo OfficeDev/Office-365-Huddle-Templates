@@ -5,6 +5,7 @@
 
 using Huddle.MetricWebApp.Infrastructure;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
@@ -69,6 +70,17 @@ namespace Huddle.MetricWebApp
 
                             var authContext = AuthenticationHelper.GetAuthenticationContext(identity, Permissions.Delegated);
                             await authContext.AcquireTokenByAuthorizationCodeAsync(context.Code, redirectUri, credential, Constants.Resources.MSGraph);
+                        },
+
+                        AuthenticationFailed = context =>
+                        {
+                            if (context.Exception is OpenIdConnectProtocolException &&
+                                (context.Exception.Message == "login_required" || context.Exception.Message == "interaction_required"))
+                            {
+                                context.Response.Redirect("/Tab/SignInRequired");
+                                context.HandleResponse();
+                            }
+                            return Task.FromResult(0);
                         }
                     }
                 });
