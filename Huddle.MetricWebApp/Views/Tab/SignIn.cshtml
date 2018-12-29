@@ -16,12 +16,19 @@
     var embedAuthUrl = Url.Action("SignIn", "Account", new { redirectUri = embedAuthRedirectUri, prompt = "none" }, protocol: Request.Url.Scheme);
 }
 
-@* try to sign in sliently with prompt=none *@
-<iframe src="@embedAuthUrl" style="display: none"></iframe>
+<div class="row">
+    <div class="col-md-12">
+        <p id="loading">Loading...</p>
 
-@* if slient sign in fails, let the user sign in manually *@
-<div id="loginRequired" style="display:none">
-    <button id="btnSignIn">Sign In</button>
+        @* try to sign in sliently with prompt=none *@
+        <iframe src="@embedAuthUrl" style="display: none"></iframe>
+
+        @* if slient sign in fails, let the user sign in manually *@
+        <div id="signInRequired" style="display:none">
+            <p>Could not sign in automatically, please click the button below to sign in manually.</p>
+            <button id="btnSignIn" class="btn btn-default btn-sm">Sign In</button>
+        </div>
+    </div>
 </div>
 
 @section scripts{
@@ -35,8 +42,9 @@
 
         // add event listener
         function messageListener(evt) {
-            if (evt.data == 'LoginRequired') {
-                $('#loginRequired').show();
+            if (evt.data == 'SignInRequired') {
+                $('#loading').hide();
+                $('#signInRequired').show();
             }
             else if (evt.data == 'SignInSuccessfully') {
                 redirectToHome();

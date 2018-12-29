@@ -1,10 +1,13 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    @Styles.Render("~/Content/css")
     <script src="https://statics.teams.microsoft.com/sdk/v1.0/js/MicrosoftTeams.min.js"></script>
 </head>
 <body>
-    @RenderBody()
+    <div class="container body-content">
+        @RenderBody()
+    </div>
     @RenderSection("scripts", required: false)
 </body>
 </html>

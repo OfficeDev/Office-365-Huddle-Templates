@@ -15,7 +15,7 @@ namespace Huddle.MetricWebApp
         public static readonly string AADTenantId = ConfigurationManager.AppSettings["ida:TenantId"];
 
         public static readonly string AADInstance = "https://login.microsoftonline.com/";
-        public static readonly string Authority = AADInstance + "common";
+        public static readonly string Authority = AADInstance + AADTenantId;
         
         public static readonly string BaseSPSiteUrl = ConfigurationManager.AppSettings["BaseSPSiteUrl"];
 
