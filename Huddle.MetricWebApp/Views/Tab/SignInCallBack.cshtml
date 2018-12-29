@@ -15,13 +15,11 @@
             window.parent.postMessage('SignInSuccessfully', '*')
         </script>
     }
-    else
+    else // popup
     {
         <script type="text/javascript">
             microsoftTeams.initialize();
             microsoftTeams.authentication.notifySuccess();
         </script>
-
-        <p>Signed in successfully. Please close the window and go ahead.</p>
     }
 }

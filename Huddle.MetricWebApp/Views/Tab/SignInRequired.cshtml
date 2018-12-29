@@ -1,0 +1,10 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_TeamsTabLayout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        window.parent.postMessage('SignInRequired', '*')
+    </script>
+}

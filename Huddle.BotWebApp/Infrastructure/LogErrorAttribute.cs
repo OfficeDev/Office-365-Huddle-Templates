@@ -17,7 +17,7 @@ namespace Huddle.BotWebApp.Infrastructure
             LogException(filterContext.Exception);
         }
 
-        private void LogException(Exception exception)
+        internal static void LogException(Exception exception)
         {
             var file = HostingEnvironment.MapPath("/App_Data/Logs/" + DateTime.UtcNow.ToString("yyyy-MM-dd") + ".log");
             var contents = $"[{DateTime.UtcNow.ToShortTimeString()}][{exception.GetType().Name}]{exception.Message}\r\n{exception.StackTrace}";
