@@ -1,9 +1,9 @@
 ---
 topic: sample
 products:
-- Office 365
+- office-365
 languages:
-- C#
+- csharp
 extensions:
   contentType: samples
   createdDate: 2/22/2018 10:58:13 AM
