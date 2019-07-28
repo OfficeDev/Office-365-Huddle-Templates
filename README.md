@@ -1,14 +1,23 @@
 ---
 page_type: sample
 products:
+- office
+- office-teams
 - office-365
 languages:
 - csharp
+- javascript
+- typescript
+- html
+description: "Huddle developer templates built on the Microsoft Teams platform help drive quality and care outcomes by enabling collaboration."
+urlFragment: ms-teams-huddle
 extensions:
   contentType: samples
-  createdDate: 2/22/2018 10:58:13 AM
+  createdDate: "2/22/2018 10:58:13 AM"
 ---
+
 # Huddle
+
 Improving quality of care depends on many things – process, patient care, and research planning. Huddle developer templates built on the Microsoft Teams platform, help drive quality and care outcomes by enabling collaboration with more effective huddle teams. With the huddle sample solutions, you can: 
 * Measure and visualize impactful best practices across your organization. 
 * Identify patient care issues and potential causes. 
