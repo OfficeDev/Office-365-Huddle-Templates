@@ -573,7 +573,7 @@ If the deployment started, but failed as below - one or two errors of sourcecont
 
 Please **Redeploy** with the same parameters and to the same resource group.
 
-# Follow-up Steps
+## Follow-up Steps
 
 ### Add Reply URL and Admin Consent Bot Web App
 
