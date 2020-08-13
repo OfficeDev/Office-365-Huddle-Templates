@@ -1,6 +1,6 @@
 {
-  "$schema": "https://statics.teams.microsoft.com/sdk/v1.0/manifest/MicrosoftTeams.schema.json",
-  "manifestVersion": "1.0",
+  "$schema": "https://statics.teams.microsoft.com/sdk/v1.7/manifest/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.7",
   "version": "1.0.0",
   "id": "<MicrosoftAppId>",
   "packageName": "com.canviz.huddle",
@@ -32,12 +32,22 @@
       ]
     }
   ],
+  "bots": [
+    {
+        "botId": "<MicrosoftAppId>",
+        "scopes": [
+            "personal"
+        ],
+        "supportsFiles": false,
+        "isNotificationOnly": false
+    }
+],
   "permissions": [
     "identity",
     "messageTeamMembers"
   ],
   "validDomains": [
     "<MetricWebAppDomain>",
-    "*.<MetricWebAppDomain>"
+    "token.botframework.com"
   ]
 }

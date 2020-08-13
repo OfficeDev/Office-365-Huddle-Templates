@@ -35,31 +35,14 @@ Improving quality of care depends on many things – process, patient care, and 
 
 [Import and publish LUIS App](#import-and-publish-luis-app)
 
-* [Import LUIS App](#import-luis-app)
-* [Set application as public](#set-application-as-public)
-* [Train and Publish the App](#train-and-publish-the-app)
-
 [Create SharePoint Site and Lists](#create-sharepoint-site-and-lists)
 
 * [Create a site collection](#create-a-site-collection)
 * [Provision Lists](#provision-lists)
-* [Add preset data](#add-preset-data)
-
-[Generate a self-signed certificate](#generate-a-self-signed-certificate)
-
-* [Generate certificate with PowerShell](#generate-certificate-with-powershell)
-* [Get keyCredential](#get-keycredential)
-* [Export the Certificate and Convert to Base64 String](#export-the-certificate-and-convert-to-base64-string)
 
 [Create App Registrations in AAD](#create-app-registrations-in-aad)
-
-* [Get Tenant Id](#get-tenant-id)
-* [Create App Registration for the Bot Web App](#create-app-registration-for-the-bot-web-app)
-* [Create App Registration for the Metric Web App](#create-app-registration-for-the-metric-web-app)
-* [Create App Registration for the MS Graph Connector](#create-app-registration-for-the-ms-graph-connector)
-* [Add keyCredential to App Registrations](#add-keycredential-to-app-registrations)
-
-[Register Microsoft App for Bot Registration](#register-microsoft-app-for-bot-registration)
+* [Register App in AAD](#register-app-in-aad)
+* [Consent Permissions](#consent-permissions)
 
 [Deploy Azure Components with ARM Template](#deploy-azure-components-with-arm-template)
 
@@ -69,9 +52,6 @@ Improving quality of care depends on many things – process, patient care, and 
 
 [Follow-up Steps](#follow-up-steps)
 
-* [Add Reply URL and Admin Consent Bot Web App](#add-reply-url-and-admin-consent-bot-web-app)
-* [Add Reply URL and Admin Consent Metric Web App](#add-reply-url-and-admin-consent-metric-web-app)
-* [Add Reply URL to MS Graph Connector App Registration](#add-reply-url-to-ms-graph-connector-app-registration)
 * [Customize and Configure the Bot](#customize-and-configure-the-bot)
 * [Authorize Planner API Connection](#authorize-planner-api-connection)
 * [Authorize Teams API Connection](#authorize-teams-api-connection)
@@ -79,10 +59,10 @@ Improving quality of care depends on many things – process, patient care, and 
 
 [Configure Teams App](#configure-teams-app)
 
-* [Start Conversation with The Bot](#start-conversation-with-the-bot)
 * [Create Teams App Package and Side-load It](#create-teams-app-package-and-side-load-it)
 * [Add Metric Input Tab](#add-metric-input-tab)
 * [Add Idea Board Tab](#add-idea-board-tab)
+* [Start Conversation with The Bot](#start-conversation-with-the-bot)
 
 ## Foreword
 
@@ -91,10 +71,33 @@ This document will guide you to deploy the solution to your environment.
 First, an Azure AAD is required to register the app registrations. In this document, the Azure AAD will be called "Huddle AAD", and an account in Huddle AAD will be called Huddle work account.
 
 * All app registrations should be created in the Huddle AAD. 
-* Bot/Luis/Microsoft App should be registered with a Huddle work account.
-
+* Bot/Luis/Microsoft App should be registered with a Huddle work account. This account should have permission to deploy resource and create resource group in Azure.
 
 * SharePoint lists should be created on SharePoint associating with Huddle AAD.
+
+* Following Powershell Modules are installed
+   * [MicrosoftTeams](https://www.powershellgallery.com/packages/MicrosoftTeams)
+   * [ImportExcel](https://github.com/dfinke/ImportExcel)
+   * [Microsoft.Graph](https://github.com/microsoftgraph/msgraph-sdk-powershell)
+   * [SharePointPnPPowerShellOnline](https://docs.microsoft.com/en-us/powershell/sharepoint/sharepoint-pnp/sharepoint-pnp-cmdlets?view=sharepoint-ps)
+   * [Azure](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
+
+   > Notes: 
+   >
+   > Run PowerShell as Administrator, and execute the commands below to install required modules:
+   > ```powershell
+   > Install-Module MicrosoftTeams
+   > Install-Module ImportExcel
+   > Install-module Microsoft.Graph
+   > Install-Module SharePointPnPPowerShellOnline
+   > Install-Module Az
+   > ```
+   >
+
+* Required [NodeJS](https://nodejs.org/en/) on your local environment. Node.js >= 8.5 and npm installed on your machine, then use:
+```cmd
+npm install -g luis-apis
+```
 
 An Azure Subscription is required to deploy the Azure components. We will use the [ARM Template](azuredeploy.json) to deploy these Azure components automatically. 
 
@@ -106,19 +109,19 @@ To learn more about the huddle solutions in Microsoft Teams and Microsoft O365, 
 
 ### Enable Microsoft Teams feature
 
-Please follow [Enable Microsoft Teams features in your Office 365 organization](https://docs.microsoft.com/en-us/microsoftteams/enable-features-office-365).
+Please follow [Teams org-wide settings in the Microsoft Teams admin center](https://docs.microsoft.com/en-us/microsoftteams/enable-features-office-365#teams-org-wide-settings-in-the-microsoft-teams-admin-center).
 
 Make sure the following options are turned on:
 
-* Allow external apps in Microsoft Teams
+* Allow third-party apps
 
-* Allow sideloading of external apps
+* Allow interaction with custom apps
 
   ![](Images/ms-teams-configure.png)
 
 ### Create Teams
 
-In this section, we will connect to Microsoft Teams in PowerShell with a Huddle work account, and execute some PowerShell scripts to create teams from an Excel file.
+In this section, we will connect to Microsoft Teams in PowerShell with a Huddle AAD account, and execute some PowerShell scripts to create teams from an Excel file.
 
 > Note: after you finish this section, teams will be created right away. But their owners and members will take up to an hour to show in Teams. Refer to [Add-TeamUser](https://docs.microsoft.com/en-us/powershell/module/teams/add-teamuser?view=teams-ps) for more details.
 
@@ -134,69 +137,24 @@ In this section, we will connect to Microsoft Teams in PowerShell with a Huddle 
    >   * Use ";" to separate multi-users. 
    >   * The Huddle work account used to connect to Microsoft Teams will be added as the owner of each team automatically, no matter it is in the owners column or not.
 
-2. Run PowerShell as Administrator, and execute the commands below to install required modules:
-
-   ~~~powershell
-   Install-Module -Name MicrosoftTeams
-   Install-Module -Name ImportExcel
-   ~~~
+2. Open PowerShell Console
 
 3. Navigate to the `/Files` folder in PowerShell
 
-   ~~~powershell
+   ```powershell
    cd <Path to Files folder> # For example: cd "c:\Users\Admin\Desktop\Huddle\Files\"
-   ~~~
+   ```
 
-4. Connect to Microsoft Teams with a Huddle work account.
+4. Connect to Microsoft Teams with a Huddle AAD account.
 
    ```
-   $connection = Connect-MicrosoftTeams
+   Connect-MicrosoftTeams
    ```
 
 5. Execute the commands below which reads data from the Excel file and create teams:
 
    ```powershell
-   function Coalesce($a, $b) { 
-       if ($a -ne $null) { $a } else { $b } 
-   }
-
-   $index = 0;
-   $splitOption = [System.StringSplitOptions]::RemoveEmptyEntries
-   $teams = Import-Excel teams.xlsx -DataOnly
-   $count = Coalesce $teams.Count 1
-
-   Foreach($team in $teams) {
-       $accessType = Coalesce $team.AccessType "Private"
-       $owners = (Coalesce $team.Owners "").Split(';', $splitOption)
-       $members = (Coalesce $team.Members "").Split(';', $splitOption)
-
-       Write-Progress -Activity "Creating Teams" -Status 'Progress->' -PercentComplete ($index * 100 / $count) -CurrentOperation ("Creating Team " + $team.Name)
-       $t = New-Team -AccessType $accessType -DisplayName $team.Name
-
-       Write-Progress -Activity "Creating Teams" -Status 'Progress->' -PercentComplete (($index + 0.5) * 100 / $count) -CurrentOperation ("Adding owners and members to " + $team.Name)
-       Foreach ($owner in $owners) {
-           if ($owner -eq $connection.Account.Id) { continue }
-           Try {
-               Add-TeamUser -GroupId $t.GroupId -User $owner -Role Owner
-           }
-           Catch {
-               $ErrorMessage = $_.Exception.Message
-               Write-Host "Could not add $owner to $team.Name as owner: $ErrorMessage"
-           }
-       }
-
-       Foreach ($member in $members) {
-           if ($member -eq $connection.Account.Id) { continue }
-           Try {
-               Add-TeamUser -GroupId $t.GroupId -User $member -Role Member
-           }
-           Catch {
-               $ErrorMessage = $_.Exception.Message
-               Write-Host "Could not add $member to $team.Name as member: $ErrorMessage"
-           }
-       }
-       $index++
-   }
+   .\NewTeams.ps1 -excelPath .\Teams.xlsx
    ```
 
 ### Update Each Team
@@ -209,7 +167,7 @@ For each team you created, please active the default planer and create 4 buckets
 
    Click **Planner**.
 
-   Find the planner which has the same name as the team, then click it.
+   Click **New plan** and then click **Add to an existing Office 365 Group**. Create a plan with the same name in the previously created group.
 
    ![](Images/ms-planner-02.png)
 
@@ -222,49 +180,19 @@ For each team you created, please active the default planer and create 4 buckets
 
 ## Import and publish LUIS App
 
-### Import LUIS App
+1. Open PowerShell Console and navigate to the `/Files` folder in PowerShell
 
-1. Open [https://www.luis.ai/](https://www.luis.ai/), then sign in with a Huddle work account.
+2. Connect to Microsoft Azure with a Huddle work account.
 
-2. Finish or skip the welcome page. Then go to the applications page:
+   ```PowerShell
+   Connect-AzAccount
+   ```
+3. Run the following script in the PowerShell console. This script will create a resource group in Azure, then import, train, and publish LUIS App. Replace \<resource group name\> with the resource group name you expect. If the execution is successful, LUIS App Id and ResourceGroup Suffix will be returned. Remember these two values
 
-   ![](Images/luis-01.png)
-
-3. Click **Import New App**.
-
-   ![](Images/luis-02.png)
-
-   * Click **Choose File**, and select `/Files/LUISApp.json`.
-   * Click **Done**. 
-
-4. Click **SETTINGS**.
-
-   ![](Images/luis-03.png)
-
-   Copy aside the **Application ID**. It will be used as the value of the **Luis App Id** parameter of the ARM Template.
-
-### Set application as public
-
-1. On the settings page, check **Set application as public**. 
-
-   ![](Images/luis-04.png)
-
-2. Click **Save changes**.
-
-   > Note: you might need to input some **description** to enable the **Save changes** button.
-
-### Train and Publish the App
-
-1. Click **Train**.
-
-   ![](Images/luis-06.png)
-
-2. Click **Publish**.
-
-   ![](Images/luis-07.png)
-
-   Click **Publish to production slot**.
-
+   ```PowerShell
+   #Replace <resource group name> with the resource group name you expect.
+   .\DeployLuis.ps1 -appPath .\LUISApp.json -resourceTemplate .\LUISTemplate.json -resourceGroup <resource group name>
+   ```
 
 ## Create SharePoint Site and Lists
 
@@ -292,7 +220,13 @@ For each team you created, please active the default planer and create 4 buckets
 
 4. Click **OK**.
 
-5. Copy aside the URL of the site collection. It will be used as the value of **Base SP Site Url** parameter of the ARM Template.
+5. When the site is created, use Huddle AAD account to log in to the site just created.
+
+6. Click the gear in the upper right corner of the page, **Shared with...**, **Invite people**. Add the users you want to use. And click **Save**
+
+   ![](Images/sp-04.png)
+
+7. Copy aside the URL of the site collection. It will be used as the value of **Base SP Site Url** parameter of the ARM Template.
 
 ###  Provision Lists
 
@@ -318,176 +252,58 @@ For each team you created, please active the default planer and create 4 buckets
    Apply-PnPProvisioningTemplate -Path PnPProvisioningTemplate.xml
    ```
 
-### Add preset data
-
-Add some categories to the Categories list, for example:
-
-* Safety/Quality
-* Access
-* Experience
-* Finance
-* People
-
-## Generate a self-signed certificate
-
-### Generate certificate with PowerShell
-
-Run PowerShell **as administrator**, then execute the commands below:
-
-~~~powershell
-$cert = New-SelfSignedCertificate -Type Custom -KeyExportPolicy Exportable -KeySpec Signature -Subject "CN=Huddle App-only Cert" -NotAfter (Get-Date).AddYears(20) -CertStoreLocation "cert:\CurrentUser\My" -KeyLength 2048
-~~~
-
-> Note: please keep the PowerShell window open until you finish the steps below.
-
-### Get keyCredential
-
-Execute the commands below to get keyCredential:
-
-> Note: Feel free to change the file path at the end of the command.
-
-~~~powershell
-$keyCredential = @{}
-$keyCredential.customKeyIdentifier = [System.Convert]::ToBase64String($cert.GetCertHash())
-$keyCredential.keyId = [System.Guid]::NewGuid().ToString()
-$keyCredential.type = "AsymmetricX509Cert"
-$keyCredential.usage = "Verify"
-$keyCredential.value = [System.Convert]::ToBase64String($cert.GetRawCertData())
-$keyCredential | ConvertTo-Json > c:\keyCredential.txt
-~~~
-
-The keyCredential is in the generated file, and will be used to create App Registrations in AAD.
-
-![](Images/cert-key-credential.png)
-
-### Export the Certificate and Convert to Base64 String
-
-The following commands will export the certificate and convert it to a base64 string.
-
-~~~powershell
-$password = Read-Host -Prompt "Enter password" -AsSecureString
-$bytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $password)
-[System.Convert]::ToBase64String($bytes) | Out-File 'c:\cert-base64.txt'
-~~~
-
-You will be prompted to input a password to protect the certificate. Please copy aside the password. It will be used as the value of the **Certificate Pfx Password** parameter of the ARM Template
-
-The base64 string of the certificate is in the generated text file, and will be used as the value of the **Certificate Pfx Base64** parameter of the ARM Template.
-
-![](Images/cert-base64.png)
+   > Notes: The Following sample data was created in the Categories list
+   >   * Safety/Quality
+   >   * Access
+   >   * Experience
+   >   * Finance
+   >   * People
 
 ## Create App Registrations in AAD 
 
-### Get Tenant Id
+### Register App in AAD
+1. Open PowerShell Console and navigate to the `/Files` folder in PowerShell
 
-Open the AAD in Azure Portal, then get the **Directory ID**.
+2. Connect to Microsoft Azure with a Huddle AAD account.
 
-![](Images/aad-tenant-id.png)
+   ```PowerShell
+   Connect-Graph -Scopes Directory.AccessAsUser.All
+   ```
+3. Run the following script in the PowerShell console. This script will create the following 4 Applications in AAD. The names of these 4 Applications are defined at the top of [NewApps.ps1](./Files/NewApps.ps1).
+   * Huddle Bot
+   * Huddle Bot Web App
+   * Huddle Metric Web App
+   * Huddle MS Graph Connector App
 
-The **Directory ID** will be used as the value of  **Tenant Id** parameter of the ARM Template.
+   ```PowerShell
+   .\NewApps.ps1 -ResourceGroupSuffix <your resourceGroupSuffix value>
+   ```
+   > Notes:
+   > The resourceGroupSuffix value is generated in **Import and publish LUIS App** section
 
-### Create App Registration for the Bot Web App
+4. After the script runs successfully, it will return the following data, remember these data
+   * Tenant Id
+   * Microsoft App Id
+   * Microsoft App Password
+   * Bot Client Id
+   * Bot Client Secret
+   * Metric Client Id
+   * Metric Client Secret
+   * Graph Client Id
+   * Graph Client Secret
+   * Certificate Pfx Base64
+   * Certificate Pfx Password
 
-1. Create a new App Registration:
+### Consent Permissions
+1. Log in to [Azure Portal](https://portal.azure.com) with Huddle AAD account. 
 
-   * Name: Huddle Bot Web App
+2. Find **Huddle Bot Web App** just created in App registrations.
 
-   * Application Type: Web app/API
+3. In **API Permission** tab, consent the permission
 
-   * Sign-on URL: https://huddle/bot-web-app
+   ![](./Images/app-registration-consent.png)
 
-   * Permissions:
-
-      | API                                      | Permission Type | Permissions                              |
-      | ---------------------------------------- | --------------- | ---------------------------------------- |
-      | Office 365 SharePoint Online<br />(Microsoft.SharePoint) | Application     | Read and write items and lists in all site collections |
-      | Microsoft  Graph                         | Delegated       | Read and write all groups<br />Read all users' full profiles |
-
-2. Copy aside the **Application Id**. It will be used as the values of **Bot Client Id** parameter of the ARM Template.
-
-3. Create a new Key and copy aside its value. The key value will be used as the value of **Bot Client Secret** parameter of the ARM Template.
-
-### Create App Registration for the Metric Web App
-
-1. Create a new App Registration:
-
-   * Name: Huddle Metric Web App
-
-   * Application Type: Web app/API
-
-   * Sign-on URL: https://huddle/metric-web-app
-
-   * Permissions:
-
-      | API                                      | Permission Type | Permissions                              |
-      | ---------------------------------------- | --------------- | ---------------------------------------- |
-      | Office 365 SharePoint Online<br />(Microsoft.SharePoint) | Application     | Read and write items and lists in all site  collections |
-      | Windows Azure Active Directory<br />(Microsoft.Azure.ActiveDirectory) | Delegated       | Read directory data<br />Sign in and read user profile |
-      | Microsoft Graph                          | Delegated       | Read and write all groups<br/>Read all groups<br />Read and write all users' full profiles |
-
-2. Copy aside the **Application Id**. It will be used as the values of **Metric Client Id** parameter of the ARM Template.
-
-3. Create a new Key and copy aside its value. The key value will be used as the value of **Metric Client Secret** parameter of the ARM Template.
-
-### Create App Registration for the MS Graph Connector
-
-1. Create a new App Registration:
-
-   * Name: Huddle MS Graph Connector
-
-   * Application Type: Web app/API
-
-   * Sign-on URL: https://huddle/ms-graph-connector
-
-   * Permissions:
-
-      | API             | Permission Type | Permissions                              |
-      | --------------- | --------------- | ---------------------------------------- |
-      | Microsoft Graph | Delegated       | Read and write all groups<br />Read all users' full profiles |
-
-2. Copy aside the **Application Id**. It will be used as the values of **Graph Client Id** parameter of the ARM Template.
-
-3. Create a new Key and copy aside its value. The key value will be used as the value of **Graph Client Secret** parameter of the ARM Template.
-
-### Add keyCredential to App Registrations 
-
-Follow the steps below to add keyCredential to App Registrations of the Bot Web App and Metric Web App
-
-1. Open an App Registration
-
-   ![](Images/app-registration-manifest-1.png)
-
-2. Click **Manifest**
-
-   ![](Images/app-registration-manifest-2.png)
-
-3. Insert the keyCredential into the square brackets of the **keyCredentials** node.
-4. Click **Save**.
-
-## Register Microsoft App for Bot Registration
-
-1. Open [https://apps.dev.microsoft.com/portal/register-app](https://apps.dev.microsoft.com/portal/register-app) in a browser, then sign in with the Huddle work account.
-
-    ![](Images/app-01.png)
-
-2. Fill the field **Application Name**, then click **Create**.
-
-    ![](Images/app-02.png)
-
-3. Copy the **Application Id**. It will be used as **Microsoft App Id** parameter of the ARM Template.
-
-    ![](Images/app-03.png)
-
-4. Click **Generate New Password** in **Application Secrets** section.
-
-    ![](Images/app-04.png)
-
-5. Copy the key then click **OK**. The key will be used as **Microsoft App Password** parameter of the ARM Template.
-
-    ![](Images/app-05.png)
-
-6. Scroll down to the end. Click **Save**.
-
+4. Follow step 2 and step 3, consent the permission for **Huddle Metric Web App** and **Huddle MS Graph Connector App**
 
 ## Deploy Azure Components with ARM Template
 
@@ -499,13 +315,13 @@ Follow the steps below to add keyCredential to App Registrations of the Bot Web 
 
    - Sign into your GitHub account where you forked this repository.
 
-   - Click **Generate Token**.
+   - Click **Generate new token**.
 
    - Enter a value in the **Token description** text box.
 
    - Select the following s (your selections should match the screenshot below):
 
-     - repo (all) -> repo:status, repo_deployment, public_repo
+     - repo (all) -> repo:status, repo_deployment, public_repo, repo:invite, security_events
      - admin:repo_hook -> read:repo_hook
 
      ![](Images/github-new-personal-access-token.png)
@@ -546,9 +362,10 @@ Follow the steps below to add keyCredential to App Registrations of the Bot Web 
 
    You have collected most of the values in previous steps. For the rest parameters:
 
+   * **Resource group**: select to created resource group in previous step. 
    * **Bot Name**: the name of the bot, will be used as Display Name of Bot Registration.
-   * **Global Team**: the name of the global team.
-   * **Source Code Repository**:  use the URL of the repository you just created -`https://github.com/<YourAccount>/Huddle`
+   * **Global Team**: the name of the global team that is one of the Teams created earlier. A webjob will move shared tasks in other team planners to the shared bucket of Global Team
+   * **Source Code Repository**:  use the URL of the repository you just created -`https://github.com/<YourAccount>/Office-365-Huddle-Templates`
    * **Source Code Branch**: master
    * **Source code Manual Integration**: false
    * Check **I agree to the terms and conditions stated above**.
@@ -575,57 +392,9 @@ Please **Redeploy** with the same parameters and to the same resource group.
 
 ## Follow-up Steps
 
-### Add Reply URL and Admin Consent Bot Web App
-
-1. Get the URL of the Bot Web app, and change the schema to http**s**, we will get a base URL.
-
-    ![](Images/bot-web-app.png)
-
-    For example: `https://huddle-bot.azurewebsites.net`
-
-2. Append `/` to the base URL, we will get the replay URL. 
-
-   For example: `https://huddle-bot.azurewebsites.net/`
-
-   Add it the Bot App Registration.
-
-   ![](Images/app-registration-reply-urls.png)
-
-3. Append `/admin/consent` to the base URL, we will get the admin consent URL.
-
-   For example: `https://huddle-bot.azurewebsites.net/admin/consent`
-
-   Open it in a browser, sign in with a Huddle admin account.
-
-   ![](Images/bot-web-app-admin-consent.png)
-
-   Click **Accept**.
-
-### Add Reply URL and Admin Consent Metric Web App
-
-Follow the similar steps in the previous chapter to add the reply URL and admin consent. 
-
-### Add Reply URL to MS Graph Connector App Registration
-
-1. Get the redirect URL from the Microsoft graph connector. 
-
-   ![](Images/graph-connector.png)
-
-   * Click the connector, then click **Edit**:
-
-   ![](Images/graph-connector-edit.png)
-
-   * Click **Security**:
-
-     ![](Images/graph-connector-redirect-url.png)
-
-     Copy the **Redirect URL** at the bottom of the page.
-
-2. Add it to reply URLs of the MS Graph Connector App Registration.
-
 ### Customize and Configure the Bot
 
-1. Navigate to the Bot Channels Registration you created.
+1. On Azure Portal, find the Resource Group you just created. Navigate to the Bot Channels Registration you created.
 
    ![](Images/bot-27.png)
 
@@ -639,44 +408,9 @@ Follow the similar steps in the previous chapter to add the reply URL and admin 
 
    * Click **Save**.
 
-
-3. Add Microsoft Teams Channel:
-
-   * Click **Channels**.
-
-     ![](Images/bot-14.png)
-
-   * Click the **Microsoft Teams Icon** under **Add a channel** section.
-
-     ![](Images/bot-15.png)
-
-     Click **Done**.
-
-   * Right-click the new added **Microsoft Teams** channel.
-
-     ![](Images/bot-16.png)
-
-   * Click **Copy link address**, and paste the URL to someplace. It will be used to add the Bot to Microsoft Teams later.
-
-4. Verify the Bot:
-
-   - Click **Test in Web Chat**:
-
-     ![](Images/bot-19.png)
-
-   - Input `list ideas`, then send.
-
-     ![](Images/bot-20.png)
-
-   - If you get responses like above, the Bot is deployed successfully.
-
-     >Note: If the message could not be sent, please click **retry **for a few times**.**
-     >
-     >![](Images/bot-21.png)
-
 ### Authorize Planner API Connection
 
-1. Navigate to the resource group.
+1. Navigate to **planner** in the resource group you just created.
 
    ![](Images/planner-api-connection-01.png)
 
@@ -684,14 +418,14 @@ Follow the similar steps in the previous chapter to add the reply URL and admin 
 
    ![](Images/planner-api-connection-02.png)
 
-3. Click **This connection is not authenticated**.
+3. Click **Edit API connection**.
 
    ![](Images/planner-api-connection-03.png)
 
 
 4. Click **Authorize**.
 
-   Pick up or input the Huddle work account. The user account should be in every team.
+   Pick up or input the Huddle AAD account. The user account should be in every team.
 
    Sign in the account.
 
@@ -709,25 +443,38 @@ Follow the similar steps in the previous chapter to authorize the **microsoft-gr
 
 ![](Images/ms-graph-connection.png)
 
+### Add Prediction Resource in LUIS App
+1. Open [LUIS](https://luis.ai) site and log in with Huddle work account
+
+![](Images/luis-config-01.png)
+
+2. Navigate to **My apps** tab
+
+3. Select the Subscription and Resource deployed in the previous step (the suffix of this resource has the same suffix as the luis app deployed in the previous step)
+
+![](Images/luis-config-02.png)
+
+4. Click on the listed app
+
+5. Select **MANAGE** tab on the top
+
+![](Images/luis-config-03.png)
+
+6. Select **Azure Resources** tab on the left
+
+![](Images/luis-config-04.png)
+
+7. Click **Add prediction resource** button
+
+![](Images/luis-config-05.png)
+
+8. Select the Subscription and Resource deployed in the previous step (the suffix of this resource has the same suffix as the luis app deployed in the previous step)
+
+![](Images/luis-config-06.png)
+
+9. Click **Done** button to save changes.
+
 ## Configure Teams App
-
-### Start Conversation with The Bot
-
-Follow the step below to start 1:1 conversation with the Bot in Microsoft Teams
-
-1. Find the URL of Microsoft Teams Channel of the Bot, 
-
-   ![](Images/bot-16.png)
-
-   Then open it in your browser:
-
-   ![](Images/bot-22.png)
-
-2. Click **Open Microsoft Teams**.
-
-Another way to start 1:1 talk is using the **MicrosoftAppId** of the Bot:
-
-![](Images/bot-23.png)
 
 ### Create Teams App Package and Side-load It
 
@@ -735,10 +482,8 @@ Another way to start 1:1 talk is using the **MicrosoftAppId** of the Bot:
 
 2. Replace the following 2 placeholders with the corresponding values you got in previous guides:
 
-   * `<MicrosoftAppId>`: the Application Id of the Microsoft App registered for Bot Registration.
-
-     ![](Images/ms-teams-01.png)
-
+   * `<MicrosoftAppId>`: Microsoft App Id generated in previous step.
+   
    * `<MetricWebAppDomain>`: the domain of the Metric Web App
 
      ![](Images/ms-teams-02.png)
@@ -760,7 +505,12 @@ Another way to start 1:1 talk is using the **MicrosoftAppId** of the Bot:
    ![](Images/ms-teams-05.png)
 
 7. Then click **Upload a custom app**.
+
 8. Select the *HuddleTeamsApp.zip*.
+
+9. Click **Add** button.
+
+   ![](Images/ms-teams-15.png)
 
 ### Add Metric Input Tab
 
@@ -776,11 +526,7 @@ Another way to start 1:1 talk is using the **MicrosoftAppId** of the Bot:
 
    ![](Images/ms-teams-08.png)
 
-4. Click **Accept**.
-
-   ![](Images/ms-teams-09.png)
-
-5. Click **Save**.
+4. Click **Save**.
 
 ### Add Idea Board Tab
 
@@ -794,11 +540,9 @@ Another way to start 1:1 talk is using the **MicrosoftAppId** of the Bot:
 
 3. Click **Planner**.
 
-4. Sign in with the Huddle work account.
+4. Choose **Use an existing plan**, then select the plan which has the same name as the team.
 
    ![](Images/ms-teams-12.png)
-
-   Choose **Use an existing plan**, then select the plan which has the same name as the team.
 
 5. Click **Save**.
 
@@ -808,9 +552,27 @@ Another way to start 1:1 talk is using the **MicrosoftAppId** of the Bot:
 
    ![](Images/ms-teams-14.png)
 
-   Input: IdeaBoard
+   Input: Idea Board
 
 7. Click **Save**. 
+
+### Start Conversation with The Bot
+
+Follow the step below to start 1:1 conversation with the Bot in Microsoft Teams
+
+1. Find the URL of Microsoft Teams Channel of the Bot, 
+
+   ![](Images/bot-16.png)
+
+   Then open it in your browser:
+
+   ![](Images/bot-22.png)
+
+2. Click **Open Microsoft Teams**.
+
+Another way to start 1:1 talk is using the **MicrosoftAppId** of the Bot:
+
+![](Images/bot-23.png)
 
 
 

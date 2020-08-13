@@ -5,11 +5,12 @@
 
 using Huddle.BotWebApp.Models;
 using Huddle.BotWebApp.Services;
-using Huddle.BotWebApp.SharePoint;
-using Huddle.BotWebApp.Utils;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Connector;
-using Microsoft.Graph;
+using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Teams;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading;
@@ -17,215 +18,257 @@ using System.Threading.Tasks;
 
 namespace Huddle.BotWebApp.Dialogs
 {
-    [Serializable]
-    public class CreateIdeaDialog : TeamDialog<Idea>
+    public class CreateIdeaOptions
     {
-        private static readonly string[] ConfirmOptions = { "Yes", "No" };
+        public string Title { get; set; }
+        public string NextSteps { get; set; }
+        public string Metric { get; set; }
+        public string Owner { get; set; }
+        public DateTime? StartDate { get; set; }
+    }
 
-        private Idea idea = new Idea();
-        private string nextSteps;
-        private Metric metric;
-        private Metric[] metrics;
-
-        protected override async Task StartTeamActionAsync(IDialogContext context)
+    public class CreateIdeaDialog : HuddleDialog
+    {
+        public CreateIdeaDialog(string id, IConfiguration configuration, UserState userState)
+            : base(id, configuration, userState)
         {
-            await context.SayAsync($"Hi {TeamsChannelAccount.GivenName}! What is your idea?");
-            context.Wait(SetTitleAsync);
+            AddDialog(new TextPrompt(nameof(TextPrompt)));
+            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
+            AddDialog(new DateResolverDialog(nameof(DateResolverDialog), configuration, userState));
+            AddDialog(new SelectTeamDialog(nameof(SelectTeamDialog), configuration, userState));
+            AddDialog(new MailIdeaSummaryDialog(nameof(MailIdeaSummaryDialog), configuration, userState));
+
+            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[] {
+                SelectTeamStepAsync,
+                TitleStepAsync,
+                NextStepsStepAsync,
+                MetricPhase1Async,
+                MetricPhase2Async,
+                OwnerPhase1Async,
+                OwnerPhase2Async,
+                StartDateStepAsync,
+                ConfirmStepAsync,
+                CreateIdeaPhase1Async,
+                CreateIdeaPhase2Async
+            }));
+
+            InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task SetTitleAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
+        private async Task<DialogTurnResult> SelectTeamStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var activity = await result;
+            var userProfile = await UserProfileAccessor.GetAsync(stepContext.Context);
+            if (userProfile.SelectedTeam != null)
+                return await stepContext.NextAsync(userProfile.SelectedTeam, cancellationToken);
 
-            idea.Title = activity.GetTrimmedText();
-            if (idea.Title.IsNullOrEmpty())
+            return await stepContext.BeginDialogAsync(nameof(SelectTeamDialog), cancellationToken: cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> TitleStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var team = (Models.Team)stepContext.Result;
+            if (team == null)
             {
-                await context.SayAsync("Idea is required. Please input again.");
-                context.Wait(SetTitleAsync);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("No team was selected. Cancelled creating idea."), cancellationToken);
+                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            }
+
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            if (createIdeaOptions.Title != null)
+                return await stepContext.NextAsync(createIdeaOptions.Title, cancellationToken);
+
+            var member = await TeamsInfo.GetMemberAsync(stepContext.Context, stepContext.Context.Activity.From.Id, cancellationToken);
+            var promptOptions = new PromptOptions
+            {
+                Prompt = MessageFactory.Text($"Hi @{member.GivenName}! What is your idea?")
+            };
+            return await stepContext.PromptAsync(nameof(TextPrompt), promptOptions, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> NextStepsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            createIdeaOptions.Title = (string)stepContext.Result;
+
+            if (createIdeaOptions.NextSteps != null)
+                return await stepContext.NextAsync(createIdeaOptions.NextSteps, cancellationToken);
+
+            var promptOptions = new PromptOptions
+            {
+                Prompt = MessageFactory.Text("Great! What are the next steps to implement this idea?")
+            };
+            return await stepContext.PromptAsync(nameof(TextPrompt), promptOptions, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> MetricPhase1Async(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            createIdeaOptions.NextSteps = (string)stepContext.Result;
+
+            if (createIdeaOptions.Metric != null)
+                return await stepContext.NextAsync(createIdeaOptions.Metric, cancellationToken);
+
+            return await stepContext.BeginDialogAsync(nameof(OAuthPrompt), null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> MetricPhase2Async(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            if (createIdeaOptions.Metric != null)
+                return await stepContext.NextAsync(createIdeaOptions.Metric, cancellationToken);
+
+            var tokenResponse = (TokenResponse)stepContext.Result;
+            if (tokenResponse?.Token == null)
+            {
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Login was not successful please try again."), cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(WaterfallDialog), createIdeaOptions, cancellationToken);
+            }
+
+            var userProfile = await UserProfileAccessor.GetAsync(stepContext.Context);
+            var service = new MetricsService(tokenResponse.Token, Configuration["BaseSPSiteUrl"]);
+            var metrics = (await service.GetActiveMetricsAsync(userProfile.SelectedTeam.Id)).ToList();
+            metrics.Add(new Metric { Id = 0, Name = "Other" });
+            var promptOptions = new PromptOptions
+            {
+                Prompt = MessageFactory.Text("What metric does this idea try to move?"),
+                Choices = metrics.Select(i => new Choice(i.Name)).ToArray()
+            };
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), promptOptions, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> OwnerPhase1Async(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            if (stepContext.Result is FoundChoice)
+                createIdeaOptions.Metric = ((FoundChoice)stepContext.Result).Value;
+
+            if (createIdeaOptions.Owner != null)
+                return await stepContext.NextAsync(createIdeaOptions.Owner, cancellationToken);
+
+            return await stepContext.BeginDialogAsync(nameof(OAuthPrompt), null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> OwnerPhase2Async(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            if (createIdeaOptions.Owner != null)
+                return await stepContext.NextAsync(createIdeaOptions.Owner, cancellationToken);
+
+            var tokenResponse = (TokenResponse)stepContext.Result;
+            if (tokenResponse?.Token == null)
+            {
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Login was not successful please try again."), cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(WaterfallDialog), createIdeaOptions, cancellationToken);
+            }
+
+            var userProfile = await UserProfileAccessor.GetAsync(stepContext.Context);
+            var service = new TeamsService(tokenResponse.Token);
+            var members = await service.GetTeamMembersAsync(userProfile.SelectedTeam.Id);
+            stepContext.Values["members"] = members;
+
+            var promptOptions = new PromptOptions
+            {
+                Prompt = MessageFactory.Text("Thanks. Please identify the idea owner."),
+                Choices = members.Select(i => new Choice(i.DisplayName)).ToArray(),
+                Style = ListStyle.HeroCard
+            };
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), promptOptions, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> StartDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            if (stepContext.Result is FoundChoice)
+            {
+                var members = (TeamMember[])stepContext.Values["members"];
+                var owner = ((FoundChoice)stepContext.Result).Value;
+                createIdeaOptions.Owner = members
+                    .Where(i => i.DisplayName == owner)
+                    .Select(i => i.Id)
+                    .FirstOrDefault();
+            }
+
+            if (createIdeaOptions.StartDate != null)
+                return await stepContext.NextAsync(createIdeaOptions.StartDate, cancellationToken);
+
+            return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), createIdeaOptions.StartDate, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var dateStr = (string)stepContext.Result;
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            createIdeaOptions.StartDate = DateTime.Parse(dateStr);
+
+            var summary = $"**Idea**: {createIdeaOptions.Title}<br />" +
+                $"**Next Steps**: {(createIdeaOptions.NextSteps.Contains("\r\n") ? "<br />" : "")}{createIdeaOptions.NextSteps.Replace("\r\n", "<br />")}<br />" +
+                $"**Aligned to Metric**: {createIdeaOptions.Metric}<br />" +
+                $"**Owner**: {createIdeaOptions.Owner}<br />" +
+                $"**Start Date**: {createIdeaOptions.StartDate.Value.ToShortDateString()}";
+            var activity = MessageFactory.Text(summary);
+            activity.TextFormat = "markdown";
+            await stepContext.Context.SendActivityAsync(activity, cancellationToken);
+
+            var promptOptions = new PromptOptions
+            {
+                Prompt = MessageFactory.Text("Would you like to submit this idea?")
+            };
+            return await stepContext.PromptAsync(nameof(ConfirmPrompt), promptOptions, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> CreateIdeaPhase1Async(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if ((bool)stepContext.Result)
+                return await stepContext.BeginDialogAsync(nameof(OAuthPrompt), null, cancellationToken);
+
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            return await stepContext.ReplaceDialogAsync(nameof(MailIdeaSummaryDialog), createIdeaOptions, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> CreateIdeaPhase2Async(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var tokenResponse = (TokenResponse)stepContext.Result;
+            if (tokenResponse?.Token == null)
+            {
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Login was not successful please try again."), cancellationToken);
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
+
+            var userProfile = await base.UserProfileAccessor.GetAsync(stepContext.Context);
+            var team = userProfile.SelectedTeam;
+
+            var createIdeaOptions = (CreateIdeaOptions)stepContext.Options;
+            var planService = new PlannerService(tokenResponse.Token);
+            var plan = await planService.GetTeamPlanAsync(team.Id, team.DisplayName);
+
+            if (plan == null)
+            {
+                var message = $"Failed to create the idea: could not find plan named '{team.DisplayName}'";
+                await stepContext.Context.SendActivityAsync(message);
             }
             else
             {
-                await context.SayAsync("Great! What are the next steps to implement this idea?");
-                context.Wait(SetNextStepsAsync);
-            }
-        }
-
-        private async Task SetNextStepsAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
-        {
-            var activity = await result;
-
-            nextSteps = activity.GetTrimmedText();
-            if (nextSteps.IsNullOrEmpty())
-            {
-                await context.SayAsync("Please input one or more steps.");
-                context.Wait(SetNextStepsAsync);
-            }
-            else
-            {
-                idea.Description = $"Next Steps\r\n{nextSteps}";
-                await SendMetricsCardAsync(context);
-                context.Wait(SetMetricAsync);
-            }
-        }
-
-        private async Task SetMetricAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
-        {
-            var activity = await result;
-
-            var metricText = activity.GetTrimmedText();
-            if (!metricText.IsNullOrEmpty())
-            {
-                int number = -1;
-                if (int.TryParse(metricText, out number) && number > 0 && number <= metrics.Length)
+                var description = $"Next Steps\r\n{createIdeaOptions.NextSteps}" +
+                    $"\r\n\r\nAligned to Metric\r\n{createIdeaOptions.Metric}";
+                var ideaService = new IdeaService(tokenResponse.Token);
+                try
                 {
-                    metric = metrics[number - 1];
-                    await context.SayAsync("You selected: " + metric.Name);
+                    await ideaService.CreateAsync(plan.Id,
+                         createIdeaOptions.Title,
+                         new DateTimeOffset(createIdeaOptions.StartDate.Value, TimeSpan.Zero),
+                         createIdeaOptions.Owner,
+                         description
+                    );
+                    await stepContext.Context.SendActivityAsync("Idea created.");
                 }
-                else
-                    metric = metrics.FirstOrDefault(i => metricText.IgnoreCaseEquals(i.Name));
-            }
-
-            if (metric == null)
-            {
-                await context.SayAsync("I don't see that as an active metric. Please add new metrics through the Metric Input tab in your team.");
-                await SendMetricsCardAsync(context);
-                context.Wait(SetMetricAsync);
-            }
-            else
-            {
-                idea.Description += $"\r\n\r\nAligned to Metric\r\n{metric.Name}";
-                await context.SayAsync($"Thanks. Please identify the idea owner. Loading members of {Team.DisplayName}...");
-                await context.Forward(new SelectTeamMemberDialog(Team, ""), SetOwner, activity, CancellationToken.None);
-            }
-        }
-
-        private async Task SetOwner(IDialogContext context, IAwaitable<TeamMember> result)
-        {
-            idea.Owners = new[] { await result };
-
-            await context.ChoiceAsync(
-                "Almost done. What date will you start to implement this? <br /> (Click one of the dates below, or input one with format mm/dd/yyyy)",
-                new[] { "Today", "Tomorrow" });
-            context.Wait(SetStartDate);
-        }
-
-        private async Task SetStartDate(IDialogContext context, IAwaitable<IMessageActivity> result)
-        {
-            var activity = await result;
-
-            DateTime startDate;
-            var commitDateStr = activity.GetTrimmedText();
-            if (commitDateStr.IgnoreCaseEquals("today"))
-                startDate = new DateTime(DateTime.Today.Ticks);
-            else if (commitDateStr.IgnoreCaseEquals("tomorrow"))
-                startDate = new DateTime(DateTime.Today.Ticks).AddDays(1);
-            else if (!DateTime.TryParse(commitDateStr, out startDate))
-            {
-                await context.SayAsync("Invalid date, please input again. (Date format: mm/dd/yyyy)");
-                context.Wait(SetStartDate);
-                return;
-            }
-
-            startDate = startDate.Date.AddHours(12);
-            idea.StartDate = new DateTimeOffset(startDate, TimeSpan.Zero);
-            var summary = $"**Idea**: {idea.Title}<br />" +
-                $"**Next Steps**: {(nextSteps.Contains("\r\n") ? "<br />" : "")}{nextSteps.Replace("\r\n", "<br />")}<br />" +
-                $"**Aligned to Metric**: {metric.Name}<br />" +
-                $"**Owner**: {idea.Owners.Select(i => i.DisplayName).FirstOrDefault()}<br />" +
-                $"**Start Date**: {idea.StartDate?.DateTime.ToShortDateString()}";
-            await context.SayAsync(summary);
-            await context.ComfirmAsync("Would you like to submit this idea?");
-
-            context.Wait(ConfirmIdeaAsync);
-        }
-
-        private async Task ConfirmIdeaAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
-        {
-            var activity = await result;
-
-            var answer = activity.GetTrimmedText();
-            if (!answer.IgnoreCaseIn(ConfirmOptions))
-            {
-                await context.ComfirmAsync("Sorry, I don't understand. Would you like to submit this idea?");
-                context.Wait(ConfirmIdeaAsync);
-                return;
-            }
-
-            if (answer.IgnoreCaseEquals("No"))
-            {
-                await context.ComfirmAsync("Okay. Would you like an email summary of your idea? (Not functional during pilot)");
-                context.Wait(ConfirmToSendIdeaByEmail);
-            }
-            else
-                await context.Forward(new SignInDialog(), SaveIdea, context.Activity, CancellationToken.None);
-        }
-
-        private async Task ConfirmToSendIdeaByEmail(IDialogContext context, IAwaitable<IMessageActivity> result)
-        {
-            var activity = await result;
-
-            var answer = activity.Text.Trim();
-            if (!answer.IgnoreCaseIn(ConfirmOptions))
-            {
-                await context.ComfirmAsync("Sorry, I don't understand. Would you like an email summary of your idea? (Not functional during pilot)");
-                context.Wait(ConfirmToSendIdeaByEmail);
-                return;
-            }
-
-            if (answer.IgnoreCaseEquals("Yes"))
-                await context.SayAsync("Sorry. Sending idea through email is not implemented!");
-            else
-                await context.SayAsync("Create idea canceled.");
-            context.Done(null as Idea);
-        }
-
-        private async Task SaveIdea(IDialogContext context, IAwaitable<GraphServiceClient> result)
-        {
-            var planService = new PlannerService(await result);
-            var ideaService = new IdeaService(await result);
-
-            var plan = await planService.GetTeamPlanAsync(Team);
-            if (plan == null) throw new ApplicationException($"Could not find plan named '{Team.DisplayName}'");
-
-            var plannerTask = await ideaService.CreateAsync(plan.Id, idea.Title, idea.StartDate, idea.Owners.Select(i => i.Id).FirstOrDefault(), idea.Description);
-            var plannerTaskUrl = ideaService.GetIdeaUrl(Team.Id, plan.Id, plannerTask.Id);
-
-            try
-            {
-                var clientContext = await AuthenticationHelper.GetAppOnlySharePointClientContextAsync();
-                var metricsService = new MetricsService(clientContext);
-                await metricsService.CreateMetricIdeaAsync(metric.Id, plannerTask, Constants.IdeasPlan.Buckets.NewIdea, plannerTaskUrl);
-            }
-            catch (Exception ex)
-            {
-                await context.SayAsync("Failed to add item to MetricIdea list: " + ex.Message);
-            }
-
-            await context.SayAsync("Idea created.");
-            context.Done(idea);
-        }
-
-        private async Task SendMetricsCardAsync(IDialogContext context)
-        {
-            var clientContext = await AuthenticationHelper.GetAppOnlySharePointClientContextAsync();
-            var metricsService = new MetricsService(clientContext);
-            metrics = (await metricsService.GetActiveMetricsAsync(Team.Id))
-                .Union(new[] { Metric.Other })
-                .ToArray();
-
-            var buttons = metrics
-                .Select((m, i) => new CardAction
+                catch (Exception ex)
                 {
-                    Title = $"{i + 1}. {m.Name}",
-                    Value = m.Name,
-                    Type = ActionTypes.ImBack
-                })
-                .ToArray();
-            var heroCard = new HeroCard(text: "What metric does this idea try to move?", buttons: buttons);
-
-            var message = context.MakeMessage();
-            message.Attachments.Add(heroCard.ToAttachment());
-            await context.PostAsync(message);
+                    var message = $"Failed to create the idea: {ex.Message}";
+                    await stepContext.Context.SendActivityAsync(message);
+                }
+            }
+            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
     }
 }

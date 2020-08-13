@@ -3,69 +3,102 @@
  *   * See LICENSE in the project root for license information.  
  */
 
-using Huddle.BotWebApp.Models;
+using Huddle.BotWebApp.Services;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Connector;
-using Microsoft.Graph;
-using System;
+using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Huddle.BotWebApp.Dialogs
 {
-    [Serializable]
-    public class SelectTeamDialog : IDialog<Team>
+    public class SelectTeamDialog : HuddleDialog
     {
-        private Team[] teams;
-
-        public async Task StartAsync(IDialogContext context)
+        public SelectTeamDialog(string id, IConfiguration configuration, UserState state)
+            : base(id, configuration, state)
         {
-            context.Wait(MessageReceivedAsync);
+
+            this.AddDialog(new TextPrompt(nameof(TextPrompt)));
+            this.AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            this.AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[] {
+               SignStepAsync,
+               ShowTeamsStepAsync,
+               FinalStepAsync
+            }));
+
+            InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
+        protected async Task<DialogTurnResult> SignStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await context.Forward(new SignInDialog(), SelectTeam, context.Activity, CancellationToken.None);
+            var userProfile = await UserProfileAccessor.GetAsync(stepContext.Context);
+            if (userProfile.SelectedTeam != null)
+            {
+                var activity = MessageFactory.Text($"Your current team is **{userProfile.SelectedTeam.DisplayName}**");
+                activity.TextFormat = "markdown";
+                await stepContext.Context.SendActivityAsync(activity);
+            }
+            return await stepContext.BeginDialogAsync(nameof(OAuthPrompt), null, cancellationToken);
         }
 
-        private async Task SelectTeam(IDialogContext context, IAwaitable<GraphServiceClient> result)
+        private async Task<DialogTurnResult> ShowTeamsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var graphServiceClient = await result;
+            var tokenResponse = (TokenResponse)stepContext.Result;
 
-            teams = await graphServiceClient.GetJoinedTeamsAsync();
+            if (tokenResponse?.Token == null)
+            {
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Login was not successful please try again."), cancellationToken);
+                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            }
+
+            var service = new TeamsService(tokenResponse.Token);
+            var teams = await service.GetJoinedTeamsAsync();
             if (teams.Length == 0)
             {
-                context.Fail(new Exception("Sorry, you do not belong to any team at the moment."));
+                await stepContext.Context.SendActivityAsync("Sorry, you do not belong to any team at the moment.");
+                return await stepContext.EndDialogAsync(null, cancellationToken);
             }
             else if (teams.Length == 1)
             {
                 var team = teams.First();
-                await context.SayAsync($"You only have one team: {team.DisplayName}. It was selected automatically.");
-                context.Done(team);
+
+                var userProfile = await UserProfileAccessor.GetAsync(stepContext.Context);
+                userProfile.SelectedTeam = team;
+
+                await stepContext.Context.SendActivityAsync($"You only have one team: {team.DisplayName}. It was selected automatically.");
+                return await stepContext.EndDialogAsync(team, cancellationToken);
             }
             else
             {
-                await context.ChoiceAsync("Please select one of you teams", teams.Select(i => i.DisplayName));
-                context.Wait(TeamSelected);
+                stepContext.Values["teams"] = teams;
+                var promptOptions = new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Please select one of you teams:"),
+                    Choices = teams.Select(i => new Choice(i.DisplayName)).ToArray(),
+                    Style = ListStyle.HeroCard
+                };
+                return await stepContext.PromptAsync(nameof(ChoicePrompt), promptOptions, cancellationToken);
             }
         }
 
-        private async Task TeamSelected(IDialogContext context, IAwaitable<IMessageActivity> result)
+        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var activity = await result as Activity;
+            var teamName = ((FoundChoice)stepContext.Result).Value;
 
-            var teamDisplayName = activity.Text.Trim();
-            var team = teams
-                .Where(i => i.DisplayName == teamDisplayName)
-                .FirstOrDefault();
-            if (team == null)
-            {
-                await context.ChoiceAsync($"Could not find team '{teamDisplayName}'. Please select one of you teams", teams.Select(i => i.DisplayName));
-                context.Wait(TeamSelected);
-            }
-            else
-                context.Done(team);
+            var teams = (Models.Team[])stepContext.Values["teams"];
+            var team = teams.FirstOrDefault(i => i.DisplayName == teamName);
+
+            var userProfile = await UserProfileAccessor.GetAsync(stepContext.Context);
+            userProfile.SelectedTeam = team;
+
+            var activity = MessageFactory.Text($"You selected **{team.DisplayName}**.");
+            activity.TextFormat = "markdown";
+            await stepContext.Context.SendActivityAsync(activity);
+
+            return await stepContext.EndDialogAsync(team, cancellationToken);
         }
     }
 }
