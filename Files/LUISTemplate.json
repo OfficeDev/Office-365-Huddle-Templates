@@ -1,0 +1,37 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {  },
+    "variables": {
+        "suffix": "[substring(uniqueString(resourceGroup().id), 0, 6)]",
+        "luisAuthoringName":"[concat('huddleLuisAuthoring-',variables('suffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[variables('luisAuthoringName')]",
+            "location": "westus",
+            "sku": {
+                "name": "F0"
+            },
+            "kind": "LUIS.Authoring",
+            "properties": {
+                "privateEndpointConnections": [],
+                "publicNetworkAccess": "Enabled"
+            }
+        }
+     ],
+    "outputs": {
+      "luisAuthoringName": {
+        "condition": "[bool('true')]",
+        "type": "string",
+        "value": "[variables('luisAuthoringName')]"
+      },
+      "uniqueString": {
+        "condition": "[bool('true')]",
+        "type": "string",
+        "value": "[variables('suffix')]"
+      }
+    }
+  }

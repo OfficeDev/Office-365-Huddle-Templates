@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.BotWebApp", "Huddle.BotWebApp\Huddle.BotWebApp.csproj", "{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.MetricWebApp", "Huddle.MetricWebApp\Huddle.MetricWebApp.csproj", "{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{78819653-F89B-4130-93C2-03124AD6707F}"
@@ -26,16 +24,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.WebJob", "Huddle.Web
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.Common", "Huddle.Common\Huddle.Common.csproj", "{736A9F8D-28A0-4BA6-BC37-709B6C289910}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huddle.BotWebApp", "Huddle.BotWebApp\Huddle.BotWebApp.csproj", "{3F18274E-94B0-40E8-A081-8121E7371178}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9435FB1C-2D34-4FA2-B1E8-EBD612BC60C8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3637CABC-B3B1-43CC-8AE7-D6E5D50FC3DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,6 +44,10 @@ Global
 		{736A9F8D-28A0-4BA6-BC37-709B6C289910}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{736A9F8D-28A0-4BA6-BC37-709B6C289910}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{736A9F8D-28A0-4BA6-BC37-709B6C289910}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F18274E-94B0-40E8-A081-8121E7371178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F18274E-94B0-40E8-A081-8121E7371178}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F18274E-94B0-40E8-A081-8121E7371178}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F18274E-94B0-40E8-A081-8121E7371178}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

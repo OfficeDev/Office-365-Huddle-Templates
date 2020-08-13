@@ -7,7 +7,6 @@ using System;
 
 namespace Huddle.BotWebApp.Models
 {
-    [Serializable]
     public class Idea
     {
         public string Id { get; set; }
@@ -18,7 +17,7 @@ namespace Huddle.BotWebApp.Models
         
         public string Description { get; set; }
 
-        public TeamMember[] Owners { get; set; }
+        public string[] Owners { get; set; }
 
         public DateTimeOffset? StartDate { get; set; }
     }

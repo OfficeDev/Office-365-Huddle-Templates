@@ -50,7 +50,7 @@
     },
     "sourceCodeRepositoryURL": {
       "type": "string",
-      "defaultValue": "https://github.com/<YourAccount>/Huddle",
+      "defaultValue": "https://github.com/<YourAccount>/Office-365-Huddle-Templates",
       "metadata": {
         "description": "Source code repository URL"
       }
@@ -77,13 +77,14 @@
     "suffix": "[substring(uniqueString(resourceGroup().id), 0, 6)]",
     "botId": "[concat(variables('nameLowecase'), '-bot-registration-', variables('suffix'))]",
     "certName": "[concat(variables('nameLowecase'),  '-cert-', variables('suffix'))]",
-    "luisName": "luis",
+    "luisName": "[concat('luis-',variables('suffix'))]",
     "hostingPlanName": "[concat(variables('nameLowecase'), '-', variables('suffix'))]",
     "storageAccountName": "[concat(variables('nameLowecase'), variables('suffix'))]",
     "botWebAppName": "[concat(variables('nameLowecase'), '-bot-', variables('suffix'))]",
     "metricAppName": "[concat(variables('nameLowecase'), '-metric-', variables('suffix'))]",
     "microsoftGraphConnectorName": "[concat('microsoft-graph-connector-', variables('suffix'))]",
-    "botMessagingEndPoint":"[concat('https://', variables('botWebAppName'), '.azurewebsites.net/api/messages')]"
+    "botMessagingEndPoint": "[concat('https://', variables('botWebAppName'), '.azurewebsites.net/api/messages')]",
+    "botRegisterConnectionName": "graphConnection"
   },
   "resources": [
     {
@@ -428,7 +429,9 @@
             "/v1.0/planner/tasks/{id}": {
               "delete": {
                 "responses": {
-                  "204": { "description": "No Content" }
+                  "204": {
+                    "description": "No Content"
+                  }
                 },
                 "summary": "Delete a Task",
                 "description": "Delete a Task by ID",
@@ -470,21 +473,79 @@
       }
     },
     {
-        "apiVersion": "2017-12-01",
-        "type": "Microsoft.BotService/botServices",
+      "type": "Microsoft.BotService/botServices",
+      "apiVersion": "2018-07-12",
+      "name": "[variables('botId')]",
+      "location": "global",
+      "sku": {
+        "name": "F0"
+      },
+      "kind": "bot",
+      "properties": {
         "name": "[variables('botId')]",
-        "location": "global",
-        "kind": "bot",
-        "sku": {
-            "name": "S1"
-        },
+        "displayName": "[parameters('botName')]",
+        "endpoint": "[variables('botMessagingEndPoint')]",
+        "msaAppId": "[parameters('microsoftAppId')]",
+        "luisAppIds": []
+      }
+    },
+    {
+      "type": "Microsoft.BotService/botServices/channels",
+      "apiVersion": "2018-07-12",
+      "name": "[concat(variables('botId'), '/MsTeamsChannel')]",
+      "location": "global",
+      "properties": {
         "properties": {
-            "name": "[variables('botId')]",
-            "displayName": "[parameters('botName')]",
-            "endpoint": "[variables('botMessagingEndPoint')]",
-            "msaAppId": "[parameters('microsoftAppId')]"
+          "enableCalling": false,
+          "isEnabled": true
         },
-        "dependsOn": []
+        "channelName": "MsTeamsChannel"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.BotService/botServices', variables('botId'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.BotService/botServices/channels",
+      "apiVersion": "2018-07-12",
+      "name": "[concat(variables('botId'), '/WebChatChannel')]",
+      "location": "global",
+      "dependsOn": [
+        "[resourceId('Microsoft.BotService/botServices', variables('botId'))]"
+      ],
+      "properties": {
+        "properties": {
+          "sites": [
+            {
+              "siteName": "Default Site",
+              "isEnabled": true,
+              "enablePreview": true
+            }
+          ]
+        },
+        "channelName": "WebChatChannel"
+      }
+    },
+    {
+      "name": "[concat(variables('botId'), '/', variables('botRegisterConnectionName'))]",
+      "type": "Microsoft.BotService/botServices/Connections",
+      "location": "global",
+      "apiVersion": "2018-07-12",
+      "properties": {
+        "clientId": "[parameters('botClientId')]",
+        "clientSecret": "[parameters('botClientSecret')]",
+        "scopes": "openid profile User.ReadBasic.All Team.ReadBasic.All Sites.Read.All Group.ReadWrite.All",
+        "serviceProviderId": "30dd229c-58e3-4a48-bdfd-91ec48eb906c",
+        "parameters": [
+          {
+            "key": "tenantId",
+            "value": "common"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.BotService/botServices', variables('botId'))]"
+      ]
     },
     {
       "type": "Microsoft.Web/connections",
@@ -1234,9 +1295,10 @@
           "type": "config",
           "name": "appsettings",
           "properties": {
+            "ConnectionName": "graphConnection",
             "LuisAppId": "[parameters('luisAppId')]",
             "LuisAPIKey": "[listkeys(resourceId('Microsoft.CognitiveServices/accounts', variables('luisName')), '2016-02-01-preview').key1]",
-            "LuisAPIDomain": "[concat(reference(concat('Microsoft.CognitiveServices/accounts/', variables('luisName')), '2016-02-01-preview', 'Full').location, '.api.cognitive.microsoft.com')]",
+            "LuisAPIHostName": "[concat(reference(concat('Microsoft.CognitiveServices/accounts/', variables('luisName')), '2016-02-01-preview', 'Full').location, '.api.cognitive.microsoft.com')]",
             "BotId": "[variables('botId')]",
             "MicrosoftAppId": "[parameters('microsoftAppId')]",
             "MicrosoftAppPassword": "[parameters('microsoftAppPassword')]",

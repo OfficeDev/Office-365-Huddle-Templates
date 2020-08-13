@@ -127,6 +127,33 @@
               <JSLink>clienttemplates.js</JSLink>
             </View>
           </pnp:Views>
+          <pnp:DataRows UpdateBehavior="Overwrite">
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Title">Safety/Quality</pnp:DataValue>
+              <pnp:DataValue FieldName="Order">100</pnp:DataValue>
+              <pnp:DataValue FieldName="FileLeafRef">1_.000</pnp:DataValue>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Title">Access</pnp:DataValue>
+              <pnp:DataValue FieldName="Order">200</pnp:DataValue>
+              <pnp:DataValue FieldName="FileLeafRef">2_.000</pnp:DataValue>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Title">Experience</pnp:DataValue>
+              <pnp:DataValue FieldName="Order">300</pnp:DataValue>
+              <pnp:DataValue FieldName="FileLeafRef">3_.000</pnp:DataValue>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Title">Finance</pnp:DataValue>
+              <pnp:DataValue FieldName="Order">400</pnp:DataValue>
+              <pnp:DataValue FieldName="FileLeafRef">4_.000</pnp:DataValue>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Title">People</pnp:DataValue>
+              <pnp:DataValue FieldName="Order">500</pnp:DataValue>
+              <pnp:DataValue FieldName="FileLeafRef">5_.000</pnp:DataValue>
+            </pnp:DataRow>
+          </pnp:DataRows>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Issues" TemplateType="100" Url="Lists/Issues" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" OnQuickLaunch="true" ContentTypesEnabled="true" EnableAttachments="false" EnableFolderCreation="false">
           <pnp:ContentTypeBindings>

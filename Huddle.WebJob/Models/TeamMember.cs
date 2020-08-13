@@ -7,7 +7,6 @@ using System;
 
 namespace Huddle.WebJob.Models
 {
-    [Serializable]
     public class TeamMember
     {
         public string Id { get; set; }

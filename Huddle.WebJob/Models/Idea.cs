@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 
 namespace Huddle.WebJob.Models
 {
-    [Serializable]
     public class Idea
     {
         public string Id { get; set; }

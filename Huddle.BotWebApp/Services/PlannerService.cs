@@ -3,48 +3,41 @@
  *   * See LICENSE in the project root for license information.  
  */
 
-using Huddle.BotWebApp.Models;
-using Huddle.Common;
 using Microsoft.Graph;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Huddle.BotWebApp.Services
 {
-    public class PlannerService
+    public class PlannerService: GraphService
     {
-        private GraphServiceClient graphServiceClient;
+        public PlannerService(string token) : base(token) { }
 
-        public PlannerService(GraphServiceClient graphServiceClient)
+        public async Task<PlannerPlan> GetTeamPlanAsync(string teamId, string teamName)
         {
-            this.graphServiceClient = graphServiceClient;
-        }
-
-        public async Task<PlannerPlan> GetTeamPlanAsync(Team team)
-        {
-            var plans = await graphServiceClient.Groups[team.Id].Planner.Plans
+            var plans = await _graphServiceClient.Groups[teamId].Planner.Plans
                 .Request()
-                .Filter($"title eq '{team.DisplayName}'") //does not work
+                .Filter($"title eq '{teamName}'") //does not work
                 .GetAsync();
 
             return plans
-                .Where(i => i.Title == team.DisplayName)
+                .Where(i => i.Title == teamName)
                 .FirstOrDefault();
         }
 
         public async Task<PlannerBucket[]> GetBucketsAsync(string planId)
         {
-            return await graphServiceClient.Planner.Plans[planId].Buckets.Request().GetAllAsync();
+            return await _graphServiceClient.Planner.Plans[planId].Buckets.Request().GetAllAsync();
         }
 
         public async Task<PlannerBucket> GetNewIdeaBucketAsync(string planId)
         {
-            var buckets = await graphServiceClient.Planner.Plans[planId].Buckets.Request()
-                .Filter($"name eq '{Constants.IdeasPlan.Buckets.NewIdea}'")
+            var buckets = await _graphServiceClient.Planner.Plans[planId].Buckets.Request()
+                .Filter($"name eq '{IdeasPlan.Buckets.NewIdea}'")
                 .GetAsync();
-
+             
             return buckets
-                .Where(i => i.Name == Constants.IdeasPlan.Buckets.NewIdea)
+                .Where(i => i.Name == IdeasPlan.Buckets.NewIdea)
                 .FirstOrDefault();
         }
     }
